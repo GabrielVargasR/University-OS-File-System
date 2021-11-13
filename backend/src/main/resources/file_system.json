@@ -1,0 +1,14 @@
+{
+  "sebas": {
+    "password": "123456",
+    "files": []
+  },
+  "gabo": {
+    "password": "safe123",
+    "files": "uno"
+  },
+  "edu": {
+    "password": "abcdef",
+    "files": []
+  }
+}
