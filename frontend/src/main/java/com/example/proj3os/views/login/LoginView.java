@@ -1,15 +1,18 @@
 package com.example.proj3os.views.login;
 
-import com.vaadin.flow.component.html.H1;
+import com.example.proj3os.controllers.UserController;
+import com.example.proj3os.views.about.AboutView;
+import com.example.proj3os.views.signup.SignUpView;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.login.LoginForm;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.router.RouterLink;
+import org.springframework.http.HttpStatus;
 
-import javax.swing.text.html.parser.ContentModel;
 
 @PageTitle("Login")
 @Route("login")
@@ -22,12 +25,24 @@ public class LoginView extends VerticalLayout {
 
         LoginForm login = new LoginForm();
         login.setForgotPasswordButtonVisible(false);
-        // agregar listener
+        login.addLoginListener(event -> {
+            UserController controller = new UserController();
+            int status = controller.login(event.getUsername(), event.getPassword());
+            if (status == HttpStatus.ACCEPTED.value()) {
+                UI.getCurrent().navigate(AboutView.class);
+            } else if (status == HttpStatus.UNAUTHORIZED.value()) {
+                event.getSource().setEnabled(true);
+                Notification.show("Incorrect password");
+            } else if (status == HttpStatus.NOT_FOUND.value()) {
+                event.getSource().setEnabled(true);
+                Notification.show("User does not exist");
+            }
+        });
         add(login);
 
-        RouterLink signupLink = new RouterLink();
-        signupLink.add("Don't have an account?");
-        // agregar routing
-        add(signupLink);
+        RouterLink signUpLink = new RouterLink();
+        signUpLink.add("Don't have an account?");
+        signUpLink.setRoute(SignUpView.class);
+        add(signUpLink);
     }
 }
