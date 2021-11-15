@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.proj3os.model.SessionInfo;
 import com.example.proj3os.views.files.FilesView;
 import com.example.proj3os.views.login.LoginView;
 import com.vaadin.flow.component.Component;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Nav;
@@ -154,12 +156,18 @@ public class MainLayout extends AppLayout {
         Footer layout = new Footer();
         layout.addClassNames("flex", "items-center", "my-s", "px-m", "py-xs");
 
-        Button logout = new Button("Log out");
-        logout.addClickListener(event -> {
+        SessionInfo session = SessionInfo.getInstance();
+        Avatar avatar = new Avatar(session.getUsername());
+        ContextMenu menu = new ContextMenu(avatar);
+
+        menu.setOpenOnClick(true);
+        menu.addItem("Logout", e -> {
+            session.setUsername("");
+            session.setCurrentDirectory("~");
             UI.getCurrent().navigate(LoginView.class);
         });
 
-        layout.add(logout);
+        layout.add(avatar);
         return layout;
     }
 
