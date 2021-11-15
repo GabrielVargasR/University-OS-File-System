@@ -19,7 +19,7 @@
      public ResponseEntity<?> listDirectory(@RequestParam("username") String user){
          try {
              ReadContext json = JsonPath.parse(new File("src/main/resources/file_system.json"));
-             return new ResponseEntity<>((String) json.read("$.gabo.password"), HttpStatus.OK);
+             return new ResponseEntity<>((Object) json.read("$." + user + ".files"), HttpStatus.OK);
          } catch (IOException e) {
              return new ResponseEntity<>(e.getStackTrace(), HttpStatus.NOT_FOUND);
          }
