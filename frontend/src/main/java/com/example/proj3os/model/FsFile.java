@@ -50,6 +50,10 @@ public class FsFile {
         return size;
     }
 
+    public boolean isDirectory() {
+        return this.type.equals("directory");
+    }
+
     @Override
     public String toString() {
         return "FsFile{" +
