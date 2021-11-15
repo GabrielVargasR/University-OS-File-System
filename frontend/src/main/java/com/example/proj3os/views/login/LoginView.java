@@ -1,16 +1,14 @@
 package com.example.proj3os.views.login;
 
 import com.example.proj3os.controllers.UserController;
-import com.example.proj3os.views.about.AboutView;
+import com.example.proj3os.model.SessionInfo;
+import com.example.proj3os.views.files.FilesView;
 import com.example.proj3os.views.signup.SignUpView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.router.*;
 import org.springframework.http.HttpStatus;
 
 
@@ -29,7 +27,10 @@ public class LoginView extends VerticalLayout {
             UserController controller = new UserController();
             int status = controller.login(event.getUsername(), event.getPassword());
             if (status == HttpStatus.ACCEPTED.value()) {
-                UI.getCurrent().navigate(AboutView.class);
+                SessionInfo session = SessionInfo.getInstance();
+                session.setUsername(event.getUsername());
+                session.setCurrentDirectory("~");
+                UI.getCurrent().navigate(FilesView.class);
             } else if (status == HttpStatus.UNAUTHORIZED.value()) {
                 event.getSource().setEnabled(true);
                 Notification.show("Incorrect password");
