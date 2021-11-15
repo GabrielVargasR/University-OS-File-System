@@ -1,1 +1,39 @@
-{"sebas":{"password":"123456","files":[]},"gabo2":{"password":"12345","files":[]},"nuevo":{"password":"safe123","files":[]},"gabo3":{"password":"asdf","files":[]},"gabo":{"password":"safe123","files":[{"contents":[{"extension":"txt","name":"file2.txt","type":"file"}],"name":"dir1","type":"directory"},{"extension":"txt","name":"file1.txt","type":"file"}]},"edu":{"password":"abcdef","files":[]}}
+{
+  "sebas": {
+    "password": "123456",
+    "files": []
+  },
+  "gabo": {
+    "password": "safe123",
+    "files": [
+      {
+        "name": "dir1",
+        "type": "directory",
+        "contents": [
+          {
+            "name": "file2",
+            "type": "file",
+            "extension": "txt",
+            "creation": "2021-11-12",
+            "modified": "2021-11-12",
+            "size": "12",
+            "contents": "Hola, esto es otro archivo de prueba"
+          }
+        ]
+      },
+      {
+        "name": "file1",
+        "type": "file",
+        "extension": "txt",
+        "creation": "2021-11-12",
+        "modified": "2021-11-12",
+        "size": "12",
+        "contents": "Hola, esto es un archivo de prueba"
+      }
+    ]
+  },
+  "edu": {
+    "password": "abcdef",
+    "files": []
+  }
+}
