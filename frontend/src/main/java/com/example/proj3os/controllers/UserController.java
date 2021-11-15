@@ -8,6 +8,7 @@ import java.net.URL;
 
 public class UserController {
     public UserController() {
+
     }
 
     public int login(String username, String password) {

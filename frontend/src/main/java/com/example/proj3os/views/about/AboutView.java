@@ -11,7 +11,6 @@ import com.vaadin.flow.router.RouteAlias;
 
 @PageTitle("About")
 @Route(value = "about", layout = MainLayout.class)
-//@RouteAlias(value = "", layout = MainLayout.class)
 public class AboutView extends VerticalLayout {
 
     public AboutView() {
