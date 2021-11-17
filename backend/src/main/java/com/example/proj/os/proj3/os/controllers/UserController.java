@@ -48,6 +48,8 @@ public class UserController {
                 jsonStr.append(scanner.nextLine());
             }
 
+            scanner.close();
+
             JSONObject json = new JSONObject(jsonStr.toString());
 
             if (json.has(user)) {
