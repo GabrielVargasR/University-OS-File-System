@@ -89,7 +89,7 @@ public class FilesView extends VerticalLayout {
 
         this.menuBar = new MenuBar();
         session.getBreadCrumbs().add(new Breadcrumb(ROOT, session.getBreadCrumbs().size()));
-        updateGrid();
+        updateMenuBar();
         add(menuBar, grid);
     }
 
