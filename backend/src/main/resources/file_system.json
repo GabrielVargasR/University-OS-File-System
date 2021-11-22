@@ -16,12 +16,32 @@
               "creation": "2021-11-12",
               "modified": "2021-11-12",
               "size": 12,
-              "contents": "Hola, esto es otro archivo de prueba",
+              "contents": "Hola, esto es otro archivo de prueba 1",
+              "name": "file2",
+              "type": "file"
+            },
+            {
+              "contents": [],
+              "name": "dir3",
+              "type": "directory"
+            }
+          ],
+          "name": "dir1",
+          "type": "directory"
+        },
+        {
+          "contents": [
+            {
+              "extension": "txt",
+              "creation": "2021-11-12",
+              "modified": "2021-11-12",
+              "size": 12,
+              "contents": "Hola, esto es otro archivo de prueba 2",
               "name": "file2",
               "type": "file"
             }
           ],
-          "name": "dir1",
+          "name": "dir2",
           "type": "directory"
         },
         {

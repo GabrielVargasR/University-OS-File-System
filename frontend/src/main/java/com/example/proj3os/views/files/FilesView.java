@@ -78,7 +78,12 @@ public class FilesView extends VerticalLayout {
         grid.addItemDoubleClickListener(event -> {
             if (event.getItem().isDirectory()) {
                 String dirName = event.getItem().getName().trim();
-                session.setCurrentDirectory(session.getCurrentDirectory()+"/"+dirName);
+                if(session.getCurrentDirectory().equals(ROOT)){
+                    session.setCurrentDirectory(session.getCurrentDirectory()+dirName);
+                } else {
+                    session.setCurrentDirectory(session.getCurrentDirectory()+"/"+dirName);
+                }
+
                 session.getBreadCrumbs().add(new Breadcrumb(dirName, session.getBreadCrumbs().size()));
                 updateMenuBar();
                 updateGrid();
@@ -105,8 +110,9 @@ public class FilesView extends VerticalLayout {
             String dirName = breadCrumb.getDirName();
             int index = breadCrumb.getIndex();
             ComponentEventListener<ClickEvent<MenuItem>> event = e -> {
+                System.out.println("HERE");
                 ArrayList<Breadcrumb> breadCrumbsCurrent = SessionInfo.getInstance().getBreadCrumbs();
-                if(index <   breadCrumbsCurrent.size()){
+                if(index < breadCrumbsCurrent.size()){
                     breadCrumbsCurrent.subList(index+1, breadCrumbsCurrent.size()).clear();
                 }
             };

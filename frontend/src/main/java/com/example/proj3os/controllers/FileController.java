@@ -79,6 +79,7 @@ public class FileController {
             e.printStackTrace();
         }
 
+        System.out.println(url);
         ReadContext json = JsonPath.parse(Common.readJsonFromUrl(url));
         ReadContext jsonObj;
         FsFile file;

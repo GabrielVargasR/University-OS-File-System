@@ -43,6 +43,7 @@ public class FileModifier {
         if (pathArray.length!=0){
             String lastValue = pathArray[pathArray.length-1];
             userFiles = searchDirectory(userFiles, lastValue);
+            userFiles = ((Directory) userFiles.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents();
         }
 
         userFiles.add(newFile);
@@ -106,6 +107,7 @@ public class FileModifier {
         if (pathArray.length!=0){
             String lastValue = pathArray[pathArray.length-1];
             userFiles = searchDirectory(userFiles, lastValue);
+            userFiles = ((Directory) userFiles.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents();
         }
 
         userFiles.add(newDirectory);
@@ -121,7 +123,7 @@ public class FileModifier {
         return JsonFileSystem.getInstance().writeToFileSystem(fileSystem);
     }
 
-    public static ArrayList<FileSystemElement> getDirectoryContents(String username, String path){
+    public static ArrayList<FileSystemElement> getDirectoryContents(String username, String path) throws Exception {
         FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem();
 
         ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
@@ -136,6 +138,8 @@ public class FileModifier {
         if (pathArray.length!=0){
             String lastValue = pathArray[pathArray.length-1];
             userFiles = searchDirectory(userFiles, lastValue);
+            userFiles = ((Directory) userFiles.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents();
+            //userFiles = ((Directory) userFiles.get(0)).getContents();
         }
         return userFiles;
     }
