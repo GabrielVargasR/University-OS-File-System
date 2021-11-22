@@ -18,10 +18,6 @@ public class UserController {
             con.setRequestMethod("GET");
             con.setRequestProperty("Content-Type", "application/json");
             return con.getResponseCode();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -36,10 +32,6 @@ public class UserController {
             con.setRequestProperty("Content-Type", "application/json");
 
             return con.getResponseCode();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -11,6 +11,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import org.springframework.http.HttpStatus;
 
+import static com.example.proj3os.helper.IConstants.ROOT;
+
 
 @PageTitle("Login")
 @Route("login")
@@ -29,7 +31,7 @@ public class LoginView extends VerticalLayout {
             if (status == HttpStatus.ACCEPTED.value()) {
                 SessionInfo session = SessionInfo.getInstance();
                 session.setUsername(event.getUsername());
-                session.setCurrentDirectory("~");
+                session.setCurrentDirectory(ROOT);
                 UI.getCurrent().navigate(FilesView.class);
             } else if (status == HttpStatus.UNAUTHORIZED.value()) {
                 event.getSource().setEnabled(true);

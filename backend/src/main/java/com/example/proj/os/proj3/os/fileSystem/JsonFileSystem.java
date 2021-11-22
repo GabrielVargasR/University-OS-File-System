@@ -1,65 +1,70 @@
 package com.example.proj.os.proj3.os.fileSystem;
 
-import org.json.*;
+import com.example.proj.os.proj3.os.other.RuntimeTypeAdapterFactory;
+import com.example.proj.os.proj3.os.pojos.Directory;
+import com.example.proj.os.proj3.os.pojos.File;
+import com.example.proj.os.proj3.os.pojos.FileSystem;
+import com.example.proj.os.proj3.os.pojos.FileSystemElement;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.ReadContext;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import static com.example.proj.os.proj3.os.fileSystem.IConstants.*;
 
 public class JsonFileSystem {
-    private static final String FILE_SYSTEM_PATH = "src/main/resources/file_system.json";
-    private static JsonFileSystem instance = null ;
 
-    private JSONObject fileSystemBuffer;
+    private static final JsonFileSystem jsonFileSystem = new JsonFileSystem();
+
+    private JsonFileSystem(){}
 
     public static JsonFileSystem getInstance(){
-        if (instance == null) {
-            instance = new JsonFileSystem();
-        }        
-        return instance;
+        return jsonFileSystem;
     }
 
-    // ! Semaphore is needed
-    public JSONObject getFileSystemBuffer() {
-        if (fileSystemBuffer == null) {
-            loadFS();
-        }
-        return fileSystemBuffer;
+    public Gson getBuilder(){
+        final RuntimeTypeAdapterFactory<FileSystemElement> typeFactory = RuntimeTypeAdapterFactory
+                .of(FileSystemElement.class, TYPE, true) // Here you specify which is the parent class and what field particularizes the child class.
+                .registerSubtype(Directory.class, DIRECTORY) // if the flag equals the class name, you can skip the second parameter. This is only necessary, when the "type" field does not equal the class name.
+                .registerSubtype(File.class, FILE);
+
+        return new GsonBuilder().registerTypeAdapterFactory(typeFactory).setPrettyPrinting().serializeNulls().create();
     }
-    
-    public void loadFS(){
-        StringBuilder jsonStr = new StringBuilder();
+
+    public String getFileSystemFileAsString() throws IOException {
+        return Files.readString(Paths.get(FILE_SYSTEM_PATH), StandardCharsets.UTF_8);
+    }
+
+    public ReadContext getFileSystemAsReadContext() throws IOException {
+        return JsonPath.parse(new java.io.File(FILE_SYSTEM_PATH));
+    }
+
+    public FileSystem getFileSystem(){
         try {
-            File file = new File(FILE_SYSTEM_PATH);
-
-            // ? Un Stream podria ser mejor idea
-            Scanner scanner = new Scanner(file);
-
-            while (scanner.hasNextLine()) {
-                jsonStr.append(scanner.nextLine());
-            }
-
-            scanner.close();
-
-            fileSystemBuffer = new JSONObject(jsonStr.toString());
-
+            return getBuilder().fromJson(getFileSystemFileAsString(), FileSystem.class);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Error loading FileSystem");
-            fileSystemBuffer = new JSONObject();
         }
+        return null;
     }
 
-    public void saveFS(){
-        try {
-            FileWriter writer = new FileWriter(FILE_SYSTEM_PATH);
-            writer.write(fileSystemBuffer.toString());
-            writer.close();
-        } catch (Exception e) {
-            System.out.println("Error saving FileSystem");
-            e.printStackTrace();
+    public boolean writeToFileSystem(FileSystem fileSystem){
+        try{
+            Writer writer = new FileWriter(FILE_SYSTEM_PATH);
+            getBuilder().toJson(fileSystem, writer);
+            writer.flush(); //flush data to file   <---
+            writer.close(); //close write          <---
+        } catch (IOException ioException){
+            return false;
         }
-
+        return true;
     }
+
 }

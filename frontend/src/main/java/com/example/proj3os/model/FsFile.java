@@ -6,9 +6,9 @@ public class FsFile {
     private final String type;
     private final String creation;
     private final String modification;
-    private final String size;
+    private final Integer size;
 
-    public FsFile(String name, String extension, String creation, String modification, String size) {
+    public FsFile(String name, String extension, String creation, String modification, Integer size) {
         this.name = name;
         this.extension = extension;
         this.type = "file";
@@ -23,7 +23,7 @@ public class FsFile {
         this.extension = "--";
         this.creation = "--";
         this.modification = "--";
-        this.size = "--";
+        this.size = 0;
     }
 
     public String getName() {
@@ -46,8 +46,16 @@ public class FsFile {
         return modification;
     }
 
-    public String getSize() {
+    public Integer getSize() {
         return size;
+    }
+
+    public String getSizeString(){
+        if(size == 0){
+            return "--";
+        } else {
+            return size.toString();
+        }
     }
 
     public boolean isDirectory() {
