@@ -24,6 +24,21 @@
               "contents": [],
               "name": "dir3",
               "type": "directory"
+            },
+            {
+              "contents": [
+                {
+                  "extension": "txt",
+                  "creation": "22/11/2021 16:57:07",
+                  "modified": "22/11/2021 16:57:07",
+                  "size": 0,
+                  "contents": "",
+                  "name": "New File",
+                  "type": "file"
+                }
+              ],
+              "name": "New Folder",
+              "type": "directory"
             }
           ],
           "name": "dir1",
@@ -43,42 +58,6 @@
           ],
           "name": "dir2",
           "type": "directory"
-        },
-        {
-          "extension": "txt",
-          "creation": "2021-11-12",
-          "modified": "2021-11-12",
-          "size": 12,
-          "contents": "Hola, esto es un archivo de prueba",
-          "name": "file1",
-          "type": "file"
-        },
-        {
-          "extension": "txt",
-          "creation": "22/11/2021 01:44:45",
-          "modified": "22/11/2021 01:44:45",
-          "size": 0,
-          "contents": "",
-          "name": "New File",
-          "type": "file"
-        },
-        {
-          "extension": "txt",
-          "creation": "22/11/2021 01:44:59",
-          "modified": "22/11/2021 01:44:59",
-          "size": 0,
-          "contents": "",
-          "name": "New File0",
-          "type": "file"
-        },
-        {
-          "extension": "txt",
-          "creation": "22/11/2021 01:45:05",
-          "modified": "22/11/2021 01:45:05",
-          "size": 0,
-          "contents": "",
-          "name": "New File1",
-          "type": "file"
         }
       ]
     },

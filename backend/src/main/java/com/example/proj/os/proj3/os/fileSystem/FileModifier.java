@@ -7,8 +7,6 @@ import com.example.proj.os.proj3.os.pojos.FileSystemElement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.example.proj.os.proj3.os.fileSystem.IConstants.*;
 
@@ -42,11 +40,11 @@ public class FileModifier {
         String[] pathArray = path.split(ROOT);
         if (pathArray.length!=0){
             String lastValue = pathArray[pathArray.length-1];
-            userFiles = searchDirectory(userFiles, lastValue);
-            userFiles = ((Directory) userFiles.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents();
+            ArrayList<FileSystemElement> targetDirectory = searchDirectory(userFiles, lastValue);
+            ((Directory) targetDirectory.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents().add(newFile);
+        } else{
+            userFiles.add(newFile);
         }
-
-        userFiles.add(newFile);
 
         fileSystem.getUsers()
                 .stream()
@@ -64,14 +62,22 @@ public class FileModifier {
             return null;
         }
 
-        List<FileSystemElement> directoriesOnLevel = userFiles.stream().filter(fileSystemElement -> fileSystemElement.getType().equals(DIRECTORY)).collect(Collectors.toList());
-        List<FileSystemElement> returnLevel = null;
+        //List<FileSystemElement> directoriesOnLevel = userFiles.stream().filter(fileSystemElement -> fileSystemElement.getType().equals(DIRECTORY)).collect(Collectors.toList());
+        ArrayList<FileSystemElement> directoriesOnLevel = new ArrayList<>();
+        for (FileSystemElement userFile : userFiles) {
+            if(userFile.getType().equals(DIRECTORY)){
+                directoriesOnLevel.add(userFile);
+            }
+        }
+
+
+        ArrayList<FileSystemElement> returnLevel = null;
         for (FileSystemElement fileSystemElement : directoriesOnLevel) {
            if(fileSystemElement.getName().equals(lastValue)){
                returnLevel = directoriesOnLevel;
                break;
            } else {
-               returnLevel = searchDirectory(new ArrayList<>(((Directory) fileSystemElement).getContents()),lastValue);
+               returnLevel = searchDirectory(((Directory) fileSystemElement).getContents(), lastValue);
                if(returnLevel!=null){
                    break;
                }
@@ -80,7 +86,7 @@ public class FileModifier {
         if(returnLevel==null || returnLevel.size() == 0){
             return null;
         } else {
-            return new ArrayList<>(returnLevel);
+            return returnLevel;
         }
     }
 
@@ -107,10 +113,11 @@ public class FileModifier {
         if (pathArray.length!=0){
             String lastValue = pathArray[pathArray.length-1];
             userFiles = searchDirectory(userFiles, lastValue);
-            userFiles = ((Directory) userFiles.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents();
+            ArrayList<FileSystemElement> targetDirectory = searchDirectory(userFiles, lastValue);
+            ((Directory) targetDirectory.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents().add(newDirectory);
+        } else{
+            userFiles.add(newDirectory);
         }
-
-        userFiles.add(newDirectory);
 
         fileSystem.getUsers()
                 .stream()

@@ -84,7 +84,7 @@ public class FilesView extends VerticalLayout {
                     session.setCurrentDirectory(session.getCurrentDirectory()+"/"+dirName);
                 }
 
-                session.getBreadCrumbs().add(new Breadcrumb(dirName, session.getBreadCrumbs().size()));
+                session.getBreadCrumbs().add(new Breadcrumb(dirName, session.getCurrentDirectory(), session.getBreadCrumbs().size()));
                 updateMenuBar();
                 updateGrid();
             } else {
@@ -93,7 +93,8 @@ public class FilesView extends VerticalLayout {
         });
 
         this.menuBar = new MenuBar();
-        session.getBreadCrumbs().add(new Breadcrumb(ROOT, session.getBreadCrumbs().size()));
+        session.getBreadCrumbs().clear();
+        session.getBreadCrumbs().add(new Breadcrumb(ROOT, session.getCurrentDirectory(), session.getBreadCrumbs().size()));
         updateMenuBar();
         add(menuBar, grid);
     }
@@ -110,10 +111,12 @@ public class FilesView extends VerticalLayout {
             String dirName = breadCrumb.getDirName();
             int index = breadCrumb.getIndex();
             ComponentEventListener<ClickEvent<MenuItem>> event = e -> {
-                System.out.println("HERE");
                 ArrayList<Breadcrumb> breadCrumbsCurrent = SessionInfo.getInstance().getBreadCrumbs();
                 if(index < breadCrumbsCurrent.size()){
-                    breadCrumbsCurrent.subList(index+1, breadCrumbsCurrent.size()).clear();
+                    SessionInfo.getInstance().setBreadCrumbs(new ArrayList<>(SessionInfo.getInstance().getBreadCrumbs().subList(0, index+1)));
+                    updateMenuBar();
+                    SessionInfo.getInstance().setCurrentDirectory(breadCrumb.getPathForDir());
+                    updateGrid();
                 }
             };
             this.menuBar.addItem(dirName, event);
