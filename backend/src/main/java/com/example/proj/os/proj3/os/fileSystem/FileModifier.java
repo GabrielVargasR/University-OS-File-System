@@ -112,7 +112,6 @@ public class FileModifier {
         String[] pathArray = path.split(ROOT);
         if (pathArray.length!=0){
             String lastValue = pathArray[pathArray.length-1];
-            userFiles = searchDirectory(userFiles, lastValue);
             ArrayList<FileSystemElement> targetDirectory = searchDirectory(userFiles, lastValue);
             ((Directory) targetDirectory.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents().add(newDirectory);
         } else{
