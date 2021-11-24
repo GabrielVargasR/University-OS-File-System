@@ -1,9 +1,17 @@
 package com.example.proj3os.helper;
 
+import com.example.proj3os.model.Directory;
+import com.example.proj3os.model.File;
+import com.example.proj3os.model.FileSystemElement;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+
+import static com.example.proj3os.helper.IConstants.*;
 
 public class Common {
 
@@ -56,6 +64,15 @@ public class Common {
             return responseCode;
         } catch (IOException ignored) {}
         return 404;
+    }
+
+    public static Gson getBuilder(){
+        final RuntimeTypeAdapterFactory<FileSystemElement> typeFactory = RuntimeTypeAdapterFactory
+                .of(FileSystemElement.class, TYPE, true) // Here you specify which is the parent class and what field particularizes the child class.
+                .registerSubtype(Directory.class, DIRECTORY) // if the flag equals the class name, you can skip the second parameter. This is only necessary, when the "type" field does not equal the class name.
+                .registerSubtype(File.class, FILE);
+
+        return new GsonBuilder().registerTypeAdapterFactory(typeFactory).setPrettyPrinting().serializeNulls().create();
     }
 
 }

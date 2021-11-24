@@ -70,7 +70,6 @@ public class FileModifier {
             }
         }
 
-
         ArrayList<FileSystemElement> returnLevel = null;
         for (FileSystemElement fileSystemElement : directoriesOnLevel) {
            if(fileSystemElement.getName().equals(lastValue)){
@@ -129,7 +128,7 @@ public class FileModifier {
         return JsonFileSystem.getInstance().writeToFileSystem(fileSystem);
     }
 
-    public static ArrayList<FileSystemElement> getDirectoryContents(String username, String path) throws Exception {
+    public static FileSystemElement getDirectoryContents(String username, String path) throws Exception {
         FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem();
 
         ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
@@ -147,6 +146,7 @@ public class FileModifier {
             userFiles = ((Directory) userFiles.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents();
             //userFiles = ((Directory) userFiles.get(0)).getContents();
         }
-        return userFiles;
+
+        return new Directory(ROOT, DIRECTORY, userFiles);
     }
 }

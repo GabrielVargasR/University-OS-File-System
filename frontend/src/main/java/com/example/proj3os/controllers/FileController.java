@@ -1,11 +1,11 @@
 package com.example.proj3os.controllers;
 
 import com.example.proj3os.helper.Common;
-import com.example.proj3os.model.FsFile;
+import com.example.proj3os.model.Directory;
+import com.example.proj3os.model.FileSystemElement;
 import com.example.proj3os.model.SessionInfo;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
-import net.minidev.json.JSONArray;
 import org.springframework.http.HttpStatus;
 
 import java.io.UnsupportedEncodingException;
@@ -15,8 +15,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.example.proj3os.helper.IConstants.FILE;
 
 public class FileController {
     public FileController() {}
@@ -71,7 +69,7 @@ public class FileController {
         return false;
     }
 
-    public static List<FsFile> getFiles(String user, String path) {
+    public static List<FileSystemElement> getFiles(String user, String path) {
         String url = "";
         try {
             url = "http://localhost:3000/api/file?username=" + URLEncoder.encode(user + "&path="+path, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=");
@@ -81,30 +79,22 @@ public class FileController {
 
         System.out.println(url);
         ReadContext json = JsonPath.parse(Common.readJsonFromUrl(url));
-        ReadContext jsonObj;
-        FsFile file;
-        ArrayList<FsFile> directoryContents = new ArrayList<>();
-
-        JSONArray files = json.read("$");
-        for (Object o : files) {
-            jsonObj = JsonPath.parse(o);
-            file = jsonObj.read("$.type").equals(FILE) ?
-                    buildFsFile(jsonObj) : new FsFile(jsonObj.read("$.name"));
-            directoryContents.add(file);
-        }
+        FileSystemElement fileSystemElement = Common.getBuilder().fromJson(json.jsonString(), FileSystemElement.class);
 
 
-        return directoryContents;
+        return ((Directory) fileSystemElement).getContents();
     }
 
-    private static FsFile buildFsFile(ReadContext json) {
-        return new FsFile(
-                json.read("$.name"),
-                json.read("$.extension"),
-                json.read("$.creation"),
-                json.read("$.modified"),
-                json.read("$.size")
-        );
+    public static ReadContext getFilesReadContext(String user, String path){
+        String url = "";
+        try {
+            url = "http://localhost:3000/api/file?username=" + URLEncoder.encode(user + "&path="+path, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(url);
+        return JsonPath.parse(Common.readJsonFromUrl(url));
     }
 
     public static boolean createDirectory(String folderName, String user, String currentPath) {
