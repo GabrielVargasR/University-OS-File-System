@@ -8,9 +8,14 @@ import com.example.proj.os.proj3.os.IConstants;
 public class Directory extends FileSystemElement implements IConstants {
     ArrayList<FileSystemElement> contents;
 
-    public Directory(String name, String type, ArrayList<FileSystemElement> contents) {
-        super(name, type);
+    public Directory(String name, ArrayList<FileSystemElement> contents) {
+        super(name, DIRECTORY);
         this.contents = contents;
+    }
+
+    public Directory(String name) {
+        super(name, DIRECTORY);
+        this.contents = new ArrayList<FileSystemElement>();
     }
 
     public ArrayList<FileSystemElement> getContents() {

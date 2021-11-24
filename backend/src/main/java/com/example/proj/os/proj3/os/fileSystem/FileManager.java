@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class FileModifier {
+public class FileManager {
 
     public static boolean createFile(String fileName, String username, String path, String created, String modified,
             String extension, String size, String content) throws Exception {
@@ -53,7 +53,7 @@ public class FileModifier {
         if (currentDir != null) {
             if (currentDir.findDir(folderName) == null) {
 
-                Directory newDirectory = new Directory(folderName, DIRECTORY, new ArrayList<>());
+                Directory newDirectory = new Directory(folderName, new ArrayList<>());
                 currentDir.getContents().add(newDirectory);
                 
             } else{
@@ -68,5 +68,16 @@ public class FileModifier {
         }
 
         return fileSystem.saveFileSystem();
+    }
+
+    public static FileSystemElement getDirectoryContents(String username, String path) throws Exception {
+        JsonFileSystem fileSystem = JsonFileSystem.getInstance();
+        Directory currentDir = fileSystem.getDirectory(username, path);
+
+        if (currentDir == null){
+            // ! Falta
+            // Dir not found
+        }
+        return currentDir;
     }
 }

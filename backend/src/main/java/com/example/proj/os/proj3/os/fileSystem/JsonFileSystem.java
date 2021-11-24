@@ -18,6 +18,11 @@ public class JsonFileSystem implements IConstants {
         return jsonFileSystem;
     }
 
+    public FileSystem getFileSystem(String pUsername) {
+        loadFileSystem(pUsername);
+        return fileSystem;
+    }
+
     public Directory getDirectory(String pUsername, String pPath) {
         loadFileSystem(pUsername);
         return getDirectoryAux(fileSystem.getFiles(), pPath.split(FILEPATH_SEPARATOR), 0);
@@ -45,6 +50,11 @@ public class JsonFileSystem implements IConstants {
 
     public boolean saveFileSystem() {
         return jsonManager.writeToFileSystem(fileSystem);
+    }
+
+    public boolean createFileSyste(String pUsername, String pPassword) {
+        FileSystem fs = new FileSystem(pUsername, pPassword, new Directory("ROOT"));
+        return jsonManager.writeToFileSystem(fs);
     }
 
     private Directory getDirectoryAux(Directory pRoot, String[] pPath, int pPathIndex){
