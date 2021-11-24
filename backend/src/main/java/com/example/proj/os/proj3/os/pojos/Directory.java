@@ -30,4 +30,14 @@ public class Directory extends FileSystemElement implements IConstants {
         }
         return null;
     }
+
+    // ? Es medio contradictorio tener esta funcion y el getDirectory arriba.
+    public Directory findDir(String pDirName){
+        for (FileSystemElement element : getContents()) {
+            if (element.getName() == pDirName && element.getType() == DIRECTORY) {
+                return (Directory) element;
+            }
+        }
+        return null;
+    }
 }

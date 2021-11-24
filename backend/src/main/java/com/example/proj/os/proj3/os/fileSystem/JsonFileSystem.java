@@ -43,6 +43,10 @@ public class JsonFileSystem implements IConstants {
         return null;
     }
 
+    public boolean saveFileSystem() {
+        return jsonManager.writeToFileSystem(fileSystem);
+    }
+
     private Directory getDirectoryAux(Directory pRoot, String[] pPath, int pPathIndex){
         if (pPath.length <= pPathIndex) {
             return pRoot;

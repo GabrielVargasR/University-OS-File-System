@@ -10,167 +10,63 @@ import java.util.Date;
 
 public class FileModifier {
 
-    public static boolean createFile(String pFileName, String username, String path, String created, String modified, String extension, String size, String content) throws Exception {
+    public static boolean createFile(String fileName, String username, String path, String created, String modified,
+            String extension, String size, String content) throws Exception {
 
-        Directory currentDir = JsonFileSystem.getInstance().getDirectory(pUsername, pPath);
+        JsonFileSystem fileSystem = JsonFileSystem.getInstance();
+        Directory currentDir = fileSystem.getDirectory(username, path);
 
-        File currentFile = currentDir.findFile(pFileName);
+        if (currentDir != null) {
+            if (currentDir.findFile(fileName) == null) {
+                File newFile;
 
-        if (currentFile != null) {
-            // ! FALTA
+                if (content.equals("")) {
+                    Date date = new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
-            // Archivo ya existe
-        }
+                    newFile = new File(fileName, FILE, EXTENSION, formatter.format(date), formatter.format(date), 0,
+                            "");
+                } else {
+                    newFile = new File(fileName, FILE, extension, created, modified, Integer.parseInt(size), content);
+                }
 
-
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        Date date = new Date();
-
-        FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem();
-        File newFile;
-
-        if(content.equals("")){
-            newFile = new File(
-                    pFileName,
-                    FILE,
-                    EXTENSION,
-                    formatter.format(date),
-                    formatter.format(date),
-                    0,
-                    ""
-            );
-        } else {
-            newFile = new File(
-                    pFileName,
-                    FILE,
-                    extension,
-                    created,
-                    modified,
-                    Integer.parseInt(size),
-                    content
-            );
-        }
-
-
-        ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
-                .stream()
-                .filter(
-                        user -> user.getUsername().equals(username)
-                ).findFirst()
-                .orElseThrow()
-                .getFiles();
-
-
-        String[] pathArray = pPath.split(ROOT);
-        if (pathArray.length!=0){
-            String lastValue = pathArray[pathArray.length-1];
-            ArrayList<FileSystemElement> targetDirectory = searchDirectory(userFiles, lastValue);
-            ((Directory) targetDirectory.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents().add(newFile);
-        } else{
-            userFiles.add(newFile);
-        }
-
-        fileSystem.getUsers()
-                .stream()
-                .filter(
-                        user -> user.getUsername().equals(pUsername)
-                ).findFirst()
-                .orElseThrow()
-                .setFiles(userFiles);
-
-        return JsonFileSystem.getInstance().writeToFileSystem(fileSystem);
-    }
-
-    private static ArrayList<FileSystemElement> searchDirectory(ArrayList<FileSystemElement> userFiles, String lastValue) {
-        if(userFiles==null){
-            return null;
-        }
-
-        //List<FileSystemElement> directoriesOnLevel = userFiles.stream().filter(fileSystemElement -> fileSystemElement.getType().equals(DIRECTORY)).collect(Collectors.toList());
-        ArrayList<FileSystemElement> directoriesOnLevel = new ArrayList<>();
-        for (FileSystemElement userFile : userFiles) {
-            if(userFile.getType().equals(DIRECTORY)){
-                directoriesOnLevel.add(userFile);
+                currentDir.getContents().add(newFile);
+            } else {
+                // ! FALTA
+                // Archivo ya existe se podria tirar exception
+                return false;
             }
-        }
 
-        ArrayList<FileSystemElement> returnLevel = null;
-        for (FileSystemElement fileSystemElement : directoriesOnLevel) {
-           if(fileSystemElement.getName().equals(lastValue)){
-               returnLevel = directoriesOnLevel;
-               break;
-           } else {
-               returnLevel = searchDirectory(((Directory) fileSystemElement).getContents(), lastValue);
-               if(returnLevel!=null){
-                   break;
-               }
-           }
-        }
-        if(returnLevel==null || returnLevel.size() == 0){
-            return null;
+            return fileSystem.saveFileSystem();
         } else {
-            return returnLevel;
+            // ! FALTA
+            // Directorio no existe
+            return false;
         }
+
     }
 
-    public static boolean createDirectory(String folderName, String pUsername, String path) throws Exception {
-        FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem(pUsername);
+    public static boolean createDirectory(String folderName, String username, String path) throws Exception {
+        JsonFileSystem fileSystem = JsonFileSystem.getInstance();
+        Directory currentDir = fileSystem.getDirectory(username, path);
 
+        if (currentDir != null) {
+            if (currentDir.findDir(folderName) == null) {
 
-        com.example.proj.os.proj3.os.pojos.Directory newDirectory = new com.example.proj.os.proj3.os.pojos.Directory(
-                folderName,
-                DIRECTORY,
-                new ArrayList<>()
-        );
-
-        ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
-                .stream()
-                .filter(
-                        user -> user.getUsername().equals(pUsername)
-                ).findFirst()
-                .orElseThrow()
-                .getFiles();
-
-
-        String[] pathArray = path.split(ROOT);
-        if (pathArray.length!=0){
-            String lastValue = pathArray[pathArray.length-1];
-            ArrayList<FileSystemElement> targetDirectory = searchDirectory(userFiles, lastValue);
-            ((Directory) targetDirectory.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents().add(newDirectory);
-        } else{
-            userFiles.add(newDirectory);
+                Directory newDirectory = new Directory(folderName, DIRECTORY, new ArrayList<>());
+                currentDir.getContents().add(newDirectory);
+                
+            } else{
+                // ! FALTA
+                // Folder already exist
+                return false;
+            }
+        } else { 
+            // ! FALTA
+            // Dir not found
+            return false;
         }
 
-        fileSystem.getUsers()
-                .stream()
-                .filter(
-                        user -> user.getUsername().equals(pUsername)
-                ).findFirst()
-                .orElseThrow()
-                .setFiles(userFiles);
-
-        return JsonFileSystem.getInstance().writeToFileSystem(fileSystem);
-    }
-
-    public static FileSystemElement getDirectoryContents(String pUsername, String path) throws Exception {
-        FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem(pUsername);
-
-        ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
-                .stream()
-                .filter(
-                        user -> user.getUsername().equals(pUsername)
-                ).findFirst()
-                .orElseThrow()
-                .getFiles();
-
-        String[] pathArray = path.split(ROOT);
-        if (pathArray.length!=0){
-            String lastValue = pathArray[pathArray.length-1];
-            userFiles = searchDirectory(userFiles, lastValue);
-            userFiles = ((Directory) userFiles.stream().filter(fileSystemElement -> fileSystemElement.getName().equals(lastValue)).findFirst().orElseThrow()).getContents();
-            //userFiles = ((Directory) userFiles.get(0)).getContents();
-        }
-
-        return new Directory(ROOT, DIRECTORY, userFiles);
+        return fileSystem.saveFileSystem();
     }
 }
