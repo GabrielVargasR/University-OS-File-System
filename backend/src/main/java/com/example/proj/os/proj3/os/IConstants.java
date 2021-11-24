@@ -1,4 +1,4 @@
-package com.example.proj.os.proj3.os.fileSystem;
+package com.example.proj.os.proj3.os;
 
 public interface IConstants {
 
