@@ -24,16 +24,18 @@ public class UserController {
         }
     }
 
+    // ? Porque consumes JSON?
     @PostMapping(value = "/api/signup", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> signUp(@RequestParam("username") String username, @RequestParam("password") String password) {
 
         if(userManager.checkUser(username)){
             return new ResponseEntity<>("User already exists", HttpStatus.CONFLICT);
         }
-
-        userManager.createUser(username, password);
-
-        return new ResponseEntity<>(username, HttpStatus.CREATED);
+        if (userManager.createUser(username, password)) {
+            return new ResponseEntity<>(username, HttpStatus.CREATED);
+        }
+        
+        return new ResponseEntity<>("Error Ocurred", HttpStatus.BAD_REQUEST);
     }
 
 

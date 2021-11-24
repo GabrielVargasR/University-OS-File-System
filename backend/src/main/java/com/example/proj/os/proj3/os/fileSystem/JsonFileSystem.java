@@ -19,8 +19,11 @@ public class JsonFileSystem implements IConstants {
     }
 
     public FileSystem getFileSystem(String pUsername) {
-        loadFileSystem(pUsername);
-        return fileSystem;
+        if (jsonManager.checkIfFsExist(pUsername)) {
+            loadFileSystem(pUsername);
+            return fileSystem;  
+        }
+        return null;
     }
 
     public Directory getDirectory(String pUsername, String pPath) {
@@ -53,8 +56,8 @@ public class JsonFileSystem implements IConstants {
     }
 
     public boolean createFileSyste(String pUsername, String pPassword) {
-        FileSystem fs = new FileSystem(pUsername, pPassword, new Directory("ROOT"));
-        return jsonManager.writeToFileSystem(fs);
+        FileSystem fs = new FileSystem(pUsername, pPassword, new Directory(ROOT_NAME));
+        return jsonManager.createFileSystem(fs);
     }
 
     private Directory getDirectoryAux(Directory pRoot, String[] pPath, int pPathIndex){

@@ -10,5 +10,6 @@ public interface IConstants {
     static final String TYPE = "type";
     static final String EXTENSION = "txt";
     static final String ROOT = "/";
+    static final String ROOT_NAME = "Root";
 
 }
