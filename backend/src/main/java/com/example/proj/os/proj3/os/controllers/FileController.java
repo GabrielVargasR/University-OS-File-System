@@ -22,9 +22,16 @@ public class FileController {
     }
 
     @GetMapping(value = "/api/createFile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createFile(@RequestParam("fileName") String pFileName, @RequestParam("user") String user, @RequestParam("path") String path){
+    public ResponseEntity<?> createFile(@RequestParam("fileName") String pFileName,
+                                        @RequestParam("user") String user,
+                                        @RequestParam("path") String path,
+                                        @RequestParam(value = "created", required = false) String created,
+                                        @RequestParam(value = "modified", required = false) String modified,
+                                        @RequestParam(value = "extension", required = false) String extension,
+                                        @RequestParam(value = "size", required = false) String size,
+                                        @RequestParam(value = "content", required = false) String content){
         try {
-            if(FileModifier.createFile(pFileName, user, path)){
+            if(FileModifier.createFile(pFileName, user, path, created, modified, extension, size, content)){
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
