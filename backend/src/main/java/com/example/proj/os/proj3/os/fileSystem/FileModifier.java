@@ -1,6 +1,7 @@
 package com.example.proj.os.proj3.os.fileSystem;
 
 import com.example.proj.os.proj3.os.pojos.Directory;
+import com.example.proj.os.proj3.os.pojos.File;
 import com.example.proj.os.proj3.os.pojos.FileSystem;
 import com.example.proj.os.proj3.os.pojos.FileSystemElement;
 
@@ -12,21 +13,35 @@ import static com.example.proj.os.proj3.os.fileSystem.IConstants.*;
 
 public class FileModifier {
 
-    public static boolean createFile(String pFileName, String username, String path) throws Exception {
+    public static boolean createFile(String pFileName, String username, String path, String created, String modified, String extension, String size, String content) throws Exception {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
 
         FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem();
+        File newFile;
 
-        com.example.proj.os.proj3.os.pojos.File newFile = new com.example.proj.os.proj3.os.pojos.File(
-                pFileName,
-                FILE,
-                EXTENSION,
-                formatter.format(date),
-                formatter.format(date),
-                0,
-                ""
-        );
+        if(content.equals("")){
+            newFile = new File(
+                    pFileName,
+                    FILE,
+                    EXTENSION,
+                    formatter.format(date),
+                    formatter.format(date),
+                    0,
+                    ""
+            );
+        } else {
+            newFile = new File(
+                    pFileName,
+                    FILE,
+                    extension,
+                    created,
+                    modified,
+                    Integer.parseInt(size),
+                    content
+            );
+        }
+
 
         ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
                 .stream()
