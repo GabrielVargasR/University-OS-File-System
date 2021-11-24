@@ -3,10 +3,12 @@ package com.example.proj.os.proj3.os.fileSystem;
 public interface IConstants {
 
     // Constantes
-    String FILE_SYSTEM_PATH = "src/main/resources/file_system.json";
-    String DIRECTORY = "directory";
-    String FILE = "file";
-    String TYPE = "type";
-    String EXTENSION = "txt";
-    String ROOT = "/";
+    static final String FILE_SYSTEM_PATH = "FileSystems";
+    static final String FILEPATH_SEPARATOR = "/";
+    static final String DIRECTORY = "directory";
+    static final String FILE = "file";
+    static final String TYPE = "type";
+    static final String EXTENSION = "txt";
+    static final String ROOT = "/";
+
 }

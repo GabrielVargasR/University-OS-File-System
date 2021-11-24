@@ -21,7 +21,9 @@ import static com.example.proj.os.proj3.os.fileSystem.IConstants.*;
 
 public class JsonFileSystem {
 
+    private static final String EXTENSION = ".json";
     private static final JsonFileSystem jsonFileSystem = new JsonFileSystem();
+
 
     private JsonFileSystem(){}
 
@@ -38,17 +40,18 @@ public class JsonFileSystem {
         return new GsonBuilder().registerTypeAdapterFactory(typeFactory).setPrettyPrinting().serializeNulls().create();
     }
 
-    public String getFileSystemFileAsString() throws IOException {
-        return Files.readString(Paths.get(FILE_SYSTEM_PATH), StandardCharsets.UTF_8);
+    public String getFileSystemFileAsString(String pName) throws IOException {
+        return Files.readString(Paths.get(FILE_SYSTEM_PATH + FILEPATH_SEPARATOR + pName + EXTENSION), StandardCharsets.UTF_8);
     }
 
-    public ReadContext getFileSystemAsReadContext() throws IOException {
-        return JsonPath.parse(new java.io.File(FILE_SYSTEM_PATH));
+    // ? Se puede borrar
+    public ReadContext getFileSystemAsReadContext(String pName) throws IOException {
+        return JsonPath.parse(new java.io.File(FILE_SYSTEM_PATH + FILEPATH_SEPARATOR + pName + EXTENSION));
     }
 
-    public FileSystem getFileSystem(){
+    public FileSystem getFileSystem(String pName){
         try {
-            return getBuilder().fromJson(getFileSystemFileAsString(), FileSystem.class);
+            return getBuilder().fromJson(getFileSystemFileAsString(pName), FileSystem.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,7 +60,7 @@ public class JsonFileSystem {
 
     public boolean writeToFileSystem(FileSystem fileSystem){
         try{
-            Writer writer = new FileWriter(FILE_SYSTEM_PATH);
+            Writer writer = new FileWriter(FILE_SYSTEM_PATH + FILEPATH_SEPARATOR + fileSystem.getUsername() + EXTENSION);
             getBuilder().toJson(fileSystem, writer);
             writer.flush(); //flush data to file   <---
             writer.close(); //close write          <---
