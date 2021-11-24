@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class FileModifier {
 
-    public static boolean createFile(String pFileName, String pUsername, String pPath) throws Exception {
+    public static boolean createFile(String pFileName, String username, String path, String created, String modified, String extension, String size, String content) throws Exception {
 
         Directory currentDir = JsonFileSystem.getInstance().getDirectory(pUsername, pPath);
 
@@ -26,19 +26,39 @@ public class FileModifier {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
 
+        FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem();
+        File newFile;
+
+        if(content.equals("")){
+            newFile = new File(
+                    pFileName,
+                    FILE,
+                    EXTENSION,
+                    formatter.format(date),
+                    formatter.format(date),
+                    0,
+                    ""
+            );
+        } else {
+            newFile = new File(
+                    pFileName,
+                    FILE,
+                    extension,
+                    created,
+                    modified,
+                    Integer.parseInt(size),
+                    content
+            );
+        }
 
 
-        com.example.proj.os.proj3.os.pojos.File newFile = new com.example.proj.os.proj3.os.pojos.File(
-                pFileName,
-                FILE,
-                EXTENSION,
-                formatter.format(date),
-                formatter.format(date),
-                0,
-                ""
-        );
-
-        fileSystem.getFiles();
+        ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
+                .stream()
+                .filter(
+                        user -> user.getUsername().equals(username)
+                ).findFirst()
+                .orElseThrow()
+                .getFiles();
 
 
         String[] pathArray = pPath.split(ROOT);
