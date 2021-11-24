@@ -1,22 +1,32 @@
 package com.example.proj.os.proj3.os.fileSystem;
 
-import com.example.proj.os.proj3.os.pojos.Directory;
-import com.example.proj.os.proj3.os.pojos.FileSystem;
-import com.example.proj.os.proj3.os.pojos.FileSystemElement;
+import com.example.proj.os.proj3.os.pojos.*;
+
+import static com.example.proj.os.proj3.os.IConstants.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.example.proj.os.proj3.os.fileSystem.IConstants.*;
-
 public class FileModifier {
 
-    public static boolean createFile(String pFileName, String username, String path) throws Exception {
+    public static boolean createFile(String pFileName, String pUsername, String pPath) throws Exception {
+
+        Directory currentDir = JsonFileSystem.getInstance().getDirectory(pUsername, pPath);
+
+        File currentFile = currentDir.findFile(pFileName);
+
+        if (currentFile != null) {
+            // ! FALTA
+
+            // Archivo ya existe
+        }
+
+
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date date = new Date();
 
-        FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem();
+
 
         com.example.proj.os.proj3.os.pojos.File newFile = new com.example.proj.os.proj3.os.pojos.File(
                 pFileName,
@@ -28,16 +38,10 @@ public class FileModifier {
                 ""
         );
 
-        ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
-                .stream()
-                .filter(
-                        user -> user.getUsername().equals(username)
-                ).findFirst()
-                .orElseThrow()
-                .getFiles();
+        fileSystem.getFiles();
 
 
-        String[] pathArray = path.split(ROOT);
+        String[] pathArray = pPath.split(ROOT);
         if (pathArray.length!=0){
             String lastValue = pathArray[pathArray.length-1];
             ArrayList<FileSystemElement> targetDirectory = searchDirectory(userFiles, lastValue);
@@ -49,7 +53,7 @@ public class FileModifier {
         fileSystem.getUsers()
                 .stream()
                 .filter(
-                        user -> user.getUsername().equals(username)
+                        user -> user.getUsername().equals(pUsername)
                 ).findFirst()
                 .orElseThrow()
                 .setFiles(userFiles);
@@ -89,8 +93,8 @@ public class FileModifier {
         }
     }
 
-    public static boolean createDirectory(String folderName, String username, String path) throws Exception {
-        FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem();
+    public static boolean createDirectory(String folderName, String pUsername, String path) throws Exception {
+        FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem(pUsername);
 
 
         com.example.proj.os.proj3.os.pojos.Directory newDirectory = new com.example.proj.os.proj3.os.pojos.Directory(
@@ -102,7 +106,7 @@ public class FileModifier {
         ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
                 .stream()
                 .filter(
-                        user -> user.getUsername().equals(username)
+                        user -> user.getUsername().equals(pUsername)
                 ).findFirst()
                 .orElseThrow()
                 .getFiles();
@@ -120,7 +124,7 @@ public class FileModifier {
         fileSystem.getUsers()
                 .stream()
                 .filter(
-                        user -> user.getUsername().equals(username)
+                        user -> user.getUsername().equals(pUsername)
                 ).findFirst()
                 .orElseThrow()
                 .setFiles(userFiles);
@@ -128,13 +132,13 @@ public class FileModifier {
         return JsonFileSystem.getInstance().writeToFileSystem(fileSystem);
     }
 
-    public static FileSystemElement getDirectoryContents(String username, String path) throws Exception {
-        FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem();
+    public static FileSystemElement getDirectoryContents(String pUsername, String path) throws Exception {
+        FileSystem fileSystem = JsonFileSystem.getInstance().getFileSystem(pUsername);
 
         ArrayList<FileSystemElement> userFiles = fileSystem.getUsers()
                 .stream()
                 .filter(
-                        user -> user.getUsername().equals(username)
+                        user -> user.getUsername().equals(pUsername)
                 ).findFirst()
                 .orElseThrow()
                 .getFiles();
