@@ -2,7 +2,7 @@ package com.example.proj.os.proj3.os.pojos;
 
 import com.google.gson.annotations.Expose;
 
-public class FileSystemElement {
+public abstract class FileSystemElement {
     private String name;
     @Expose
     private String type;

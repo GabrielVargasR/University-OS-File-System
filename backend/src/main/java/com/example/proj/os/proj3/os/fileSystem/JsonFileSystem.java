@@ -1,73 +1,67 @@
 package com.example.proj.os.proj3.os.fileSystem;
 
-import com.example.proj.os.proj3.os.other.RuntimeTypeAdapterFactory;
-import com.example.proj.os.proj3.os.pojos.Directory;
-import com.example.proj.os.proj3.os.pojos.File;
-import com.example.proj.os.proj3.os.pojos.FileSystem;
-import com.example.proj.os.proj3.os.pojos.FileSystemElement;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.ReadContext;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.Arrays;
 
-import static com.example.proj.os.proj3.os.fileSystem.IConstants.*;
+import com.example.proj.os.proj3.os.pojos.*;
 
-public class JsonFileSystem {
+public class JsonFileSystem implements IConstants {
 
-    private static final String EXTENSION = ".json";
+    private FileSystem fileSystem;
+
+    private final JsonManager jsonManager = new JsonManager();
+
     private static final JsonFileSystem jsonFileSystem = new JsonFileSystem();
-
-
-    private JsonFileSystem(){}
 
     public static JsonFileSystem getInstance(){
         return jsonFileSystem;
     }
 
-    public Gson getBuilder(){
-        final RuntimeTypeAdapterFactory<FileSystemElement> typeFactory = RuntimeTypeAdapterFactory
-                .of(FileSystemElement.class, TYPE, true) // Here you specify which is the parent class and what field particularizes the child class.
-                .registerSubtype(Directory.class, DIRECTORY) // if the flag equals the class name, you can skip the second parameter. This is only necessary, when the "type" field does not equal the class name.
-                .registerSubtype(File.class, FILE);
-
-        return new GsonBuilder().registerTypeAdapterFactory(typeFactory).setPrettyPrinting().serializeNulls().create();
+    public Directory getDirectory(String pUsername, String pPath) {
+        loadFileSystem(pUsername);
+        return getDirectoryAux(fileSystem.getFiles(), pPath.split(FILEPATH_SEPARATOR), 0);
     }
 
-    public String getFileSystemFileAsString(String pName) throws IOException {
-        return Files.readString(Paths.get(FILE_SYSTEM_PATH + FILEPATH_SEPARATOR + pName + EXTENSION), StandardCharsets.UTF_8);
-    }
+    public File getFile(String pUsername, String pPath) {
+        loadFileSystem(pUsername);
+        String[] pathArray = pPath.split(FILEPATH_SEPARATOR);
+        String[] dirPath = Arrays.copyOfRange(pathArray, 0, (pathArray.length-1));
+        String fileName = pathArray[pathArray.length-1];
 
-    // ? Se puede borrar
-    public ReadContext getFileSystemAsReadContext(String pName) throws IOException {
-        return JsonPath.parse(new java.io.File(FILE_SYSTEM_PATH + FILEPATH_SEPARATOR + pName + EXTENSION));
-    }
+        Directory dir = getDirectoryAux(fileSystem.getFiles(), dirPath, 0);
 
-    public FileSystem getFileSystem(String pName){
-        try {
-            return getBuilder().fromJson(getFileSystemFileAsString(pName), FileSystem.class);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (dir != null) {
+            for (FileSystemElement element : dir.getContents()) {
+                if (element.getName() == fileName && element.getType() == FILE) {
+                    return (File) element;
+                }
+            }
         }
+
+        // Not Found
         return null;
     }
 
-    public boolean writeToFileSystem(FileSystem fileSystem){
-        try{
-            Writer writer = new FileWriter(FILE_SYSTEM_PATH + FILEPATH_SEPARATOR + fileSystem.getUsername() + EXTENSION);
-            getBuilder().toJson(fileSystem, writer);
-            writer.flush(); //flush data to file   <---
-            writer.close(); //close write          <---
-        } catch (IOException ioException){
-            return false;
+    private Directory getDirectoryAux(Directory pRoot, String[] pPath, int pPathIndex){
+        if (pPath.length <= pPathIndex) {
+            return pRoot;
         }
-        return true;
+        
+        for (FileSystemElement element : pRoot.getContents()) {
+            if (element.getName() == pPath[pPathIndex] && element.getType() == DIRECTORY) {
+                return getDirectoryAux(pRoot, pPath, pPathIndex+1);
+            }
+        }
+
+        // Not found
+        return null;
+
     }
 
+    private void loadFileSystem(String pUsername) {
+        // En caso de que se quiera editar en memoria se puede modificar aqui.
+        fileSystem = jsonManager.getFileSystem(pUsername);
+    }
+
+    private JsonFileSystem(){}
 }
