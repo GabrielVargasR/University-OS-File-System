@@ -13,6 +13,7 @@ import com.example.proj3os.views.MainLayout;
 import com.example.proj3os.views.file.FileDisplay;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.MenuItem;
@@ -21,7 +22,9 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -29,6 +32,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
@@ -59,8 +63,9 @@ public class FilesView extends VerticalLayout {
     private final Grid<FileSystemElement> grid;
     private Grid<FileSystemElement> dialogGrid;
     private final MenuBar menuBar;
-    private final Dialog dialog = new Dialog();
 
+    private final Dialog dialog = new Dialog();
+    private static boolean movingFlag = false;
     MemoryBuffer memoryBuffer = new MemoryBuffer();
     Upload singleFileUpload = new Upload(memoryBuffer);
     DownloadLink downloadLink = new DownloadLink();
@@ -86,6 +91,10 @@ public class FilesView extends VerticalLayout {
         HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, createDownloadButton(), createDeleteButton());
 
         add(menuBar, grid, horizontalLayout, dialog);
+    }
+
+    public static void setMovingFlag(boolean movingFlag) {
+        FilesView.movingFlag = movingFlag;
     }
 
     private Button createDownloadButton(){
@@ -165,21 +174,34 @@ public class FilesView extends VerticalLayout {
     public void initGridContextMenu(GridContextMenu<FileSystemElement> gridContextMenu, Grid<FileSystemElement> grid){
         SessionInfo session = SessionInfo.getInstance();
         gridContextMenu.addItem("New File", event -> {
-            if(FileController.createFile("New File", session.getUsername(), session.getCurrentDirectory())){
-                Notification.show("File Created");
-                updateGrid(grid);
-            } else {
-                Notification.show("Could not create file");
-            }
+            TextField textField = new TextField("New File Name:");
+            Dialog dialog = createNewDialog(textField);
+            dialog.addDialogCloseActionListener(closeDialogEvent -> {
+                if(FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory())){
+                    Notification.show("File Created");
+                    updateGrid(grid);
+
+                    // ! Aqui llama a abrir la ventana de modify
+
+                } else {
+                    Notification.show("Could not create file");
+                }
+            });
+            dialog.open();
         });
 
         gridContextMenu.addItem("New Folder", event -> {
-            if(FileController.createDirectory("New Folder", session.getUsername(), session.getCurrentDirectory())){
-                Notification.show("Folder Created");
-                updateGrid(grid);
-            } else {
-                Notification.show("Could not create folder");
-            }
+            TextField textField = new TextField("New Folder Name:");
+            Dialog dialog = createNewDialog(textField);
+            dialog.addDialogCloseActionListener(closeDialogEvent -> {
+                if(FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory())){
+                    Notification.show("Folder Created");
+                    updateGrid(grid);
+                } else {
+                    Notification.show("Could not create folder");
+                }
+            });
+            dialog.open();
         });
 
         gridContextMenu.addItem("Copy To", event -> {
@@ -190,13 +212,32 @@ public class FilesView extends VerticalLayout {
             updateGridDirectoriesOnly(dialogGrid, session.getCurrentModalDirectory());
             dialog.open();
         });
+
+        gridContextMenu.addItem("Move To", event -> {
+            movingFlag = true;
+            FileSystemElement fileSystemElement = event.getItem().orElse(null);
+            assert fileSystemElement!=null;
+            session.setFileToCopy(fileSystemElement);
+            session.setCurrentModalDirectory(ROOT);
+            updateGridDirectoriesOnly(dialogGrid, session.getCurrentModalDirectory());
+            dialog.open();
+        });
+        
     }
 
     public VerticalLayout createDialogueLayout(Dialog dialog){
-        Button cancelButton = new Button("Cancel", e -> dialog.close());
+        Button cancelButton = new Button("Cancel", e -> {
+            dialog.close();
+        });
         Button saveButton = new Button("Save", e -> {
             SessionInfo sessionInfo = SessionInfo.getInstance();
-            FileController.copyFile(sessionInfo.getFileToCopy(),sessionInfo.getCurrentDirectory(), sessionInfo.getCurrentModalDirectory());
+            if (movingFlag) {
+                FileController.moveFile(sessionInfo.getFileToCopy(),sessionInfo.getCurrentDirectory(), sessionInfo.getCurrentModalDirectory());
+            }
+            else{
+                FileController.copyFile(sessionInfo.getFileToCopy(),sessionInfo.getCurrentDirectory(), sessionInfo.getCurrentModalDirectory());
+            }
+
             dialog.close();
         });
         cancelButton.setEnabled(true);
@@ -309,5 +350,41 @@ public class FilesView extends VerticalLayout {
             updateGrid(grid);
             // processFile(fileData, fileName, contentLength, mimeType);
         });
+    }
+
+    private Dialog createNewDialog(TextField textField) {
+        Dialog dialog = new Dialog();
+
+        dialog.add(textField);
+        dialog.setCloseOnEsc(false);
+        dialog.setCloseOnOutsideClick(false);
+
+        Button closeButton = new Button("Close", event -> {
+            dialog.close();
+        });
+
+        dialog.add(new Div(closeButton));
+
+        return dialog;
+
+    }
+
+    private void captureDialogConfirmation(String pText, Boolean boolRef) {
+        Dialog dialog = new Dialog();
+        dialog.add(new Text(pText));
+        dialog.setCloseOnEsc(false);
+        dialog.setCloseOnOutsideClick(false);
+        Span message = new Span();
+
+        Button confirmButton = new Button("Confirm", event -> {
+            message.setText("Confirmed!");
+            dialog.close();
+        });
+        Button cancelButton = new Button("Cancel", event -> {
+            message.setText("Cancelled...");
+            dialog.close();
+        });
+
+        dialog.add(new Div( confirmButton, cancelButton));
     }
 }

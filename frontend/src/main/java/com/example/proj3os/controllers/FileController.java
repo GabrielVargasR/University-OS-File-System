@@ -5,6 +5,7 @@ import com.example.proj3os.model.Directory;
 import com.example.proj3os.model.File;
 import com.example.proj3os.model.FileSystemElement;
 import com.example.proj3os.model.SessionInfo;
+import com.example.proj3os.views.files.FilesView;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.filechooser.FileView;
 
 import static com.example.proj3os.helper.IConstants.DIRECTORY;
 
@@ -176,6 +179,29 @@ public class FileController {
         }
     }
 
+    public static boolean deleteItem(String username, String currentPath, FileSystemElement element ) {
+        try {
+            StringBuilder str = new StringBuilder();
+            str.append("http://localhost:3000/api/");
+            str.append("deleteItem");
+            str.append("?user=");
+            str.append(username);
+            str.append("&path=");
+            str.append(currentPath);
+            str.append("&itemName=");
+            str.append(element.getName());
+            str.append("&itemType=");
+            str.append(element.getType());
+
+            URL url = new URL(str.toString());
+            
+
+            return Common.makeApiCall(url, "GET") == HttpStatus.OK.value();
+        } catch (MalformedURLException e) {
+            return false;
+        }
+    }
+
     public static boolean copyFile(FileSystemElement fileToCopy, String currentDirectory, String targetDirectory) {
         String newName = newNameWithIndex(fileToCopy.getName(), targetDirectory);
 
@@ -211,6 +237,47 @@ public class FileController {
                 return false;
             }
         }
+
+
+        return false;
+    }
+
+    public static boolean moveFile(FileSystemElement fileToCopy, String currentDirectory, String targetDirectory) {
+        FilesView.setMovingFlag(false);
+
+        String newName = newNameWithIndex(fileToCopy.getName(), targetDirectory);
+
+        if(fileToCopy.getType().equals(DIRECTORY)){
+
+            try {
+                String endpoint = "http://localhost:3000/api/createDirectory?dirName=" + URLEncoder.encode(newName+"&user="+SessionInfo.getInstance().getUsername()+"&path="+targetDirectory, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+                System.out.println(endpoint);
+                if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
+                    Directory directory = (Directory) fileToCopy;
+                    for (FileSystemElement content : directory.getContents()) {
+                        copyFile(content, currentDirectory, targetDirectory+"/"+newName);
+                    }
+                } else {
+                    return false;
+                }
+            } catch (MalformedURLException | UnsupportedEncodingException e) {
+                return false;
+            }
+
+        } else {
+            try {
+                File file = (File) fileToCopy;
+                String endpoint = "http://localhost:3000/api/createFile?fileName=" + URLEncoder.encode(newName+"&user="+SessionInfo.getInstance().getUsername()+"&path="+targetDirectory+"&created="+file.getCreation()+"&modified="+file.getModified()+"&extension="+file.getExtension()+"&size="+file.getSize()+"&content="+file.getContents(), StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+                System.out.println(endpoint);
+                if(Common.makeApiCall(new URL(endpoint), "GET") != HttpStatus.OK.value()){
+                    return false;
+                }
+            } catch (MalformedURLException | UnsupportedEncodingException f) {
+                return false;
+            }
+        }
+
+        deleteItem(SessionInfo.getInstance().getUsername(), currentDirectory, fileToCopy);
 
 
         return false;
