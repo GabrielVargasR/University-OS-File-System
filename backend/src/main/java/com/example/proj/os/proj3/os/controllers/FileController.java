@@ -52,6 +52,27 @@ public class FileController {
         }
     }
 
+    @GetMapping(value = "/api/modifyFile", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> modifyFile(@RequestParam("fileName") String pFileName,
+                                        @RequestParam("user") String user,
+                                        @RequestParam("path") String path,
+                                        @RequestParam(value = "content") String content,
+                                        @RequestParam(value = "created", required = false) String created,
+                                        @RequestParam(value = "modified", required = false) String modified,
+                                        @RequestParam(value = "extension", required = false) String extension,
+                                        @RequestParam(value = "size", required = false) String size)
+                                        {
+        try {
+            if(FileManager.modifyFile(pFileName, user, path, created, modified, extension, size, content)){
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping(value = "/api/createDirectory", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createDirectory(@RequestParam("dirName") String dirName, @RequestParam("user") String user, @RequestParam("path") String path){
         try {

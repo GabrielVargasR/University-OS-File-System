@@ -46,6 +46,34 @@ public class FileManager {
 
     }
 
+    public static boolean modifyFile(String fileName, String username, String path, String created, String modified, String extension, String size, String content) throws Exception{
+        JsonFileSystem fileSystem = JsonFileSystem.getInstance();
+        Directory currentDir = fileSystem.getDirectory(username, path);
+
+        if (currentDir != null) {
+            File file = currentDir.findFile(fileName);
+            if ( file != null) {
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                file.setContents(content);
+                file.setModified(formatter.format(new Date()));
+                file.setSize(Integer.parseInt(size));
+
+            } else {
+                // ! FALTA
+                // Archivo no existe
+                return false;
+            }
+
+            return fileSystem.saveFileSystem();
+
+        } else {
+            // ! FALTA
+            // Directorio no existe
+            return false;
+        }
+
+    }
+
     public static boolean createDirectory(String folderName, String username, String path) throws Exception {
         JsonFileSystem fileSystem = JsonFileSystem.getInstance();
         Directory currentDir = fileSystem.getDirectory(username, path);
@@ -55,13 +83,13 @@ public class FileManager {
 
                 Directory newDirectory = new Directory(folderName, new ArrayList<>());
                 currentDir.getContents().add(newDirectory);
-                
-            } else{
+
+            } else {
                 // ! FALTA
                 // Folder already exist
                 return false;
             }
-        } else { 
+        } else {
             // ! FALTA
             // Dir not found
             return false;
@@ -74,7 +102,7 @@ public class FileManager {
         JsonFileSystem fileSystem = JsonFileSystem.getInstance();
         Directory currentDir = fileSystem.getDirectory(username, path);
 
-        if (currentDir == null){
+        if (currentDir == null) {
             // ! Falta
             // Dir not found
         }
@@ -91,24 +119,24 @@ public class FileManager {
         return fileSystem.saveFileSystem() && res;
     }
 
-    public static boolean deleteItems(String username, String path, ArrayList<FileSystemElement> elements ) {
+    public static boolean deleteItems(String username, String path, ArrayList<FileSystemElement> elements) {
         JsonFileSystem fileSystem = JsonFileSystem.getInstance();
         Directory currentDir = fileSystem.getDirectory(username, path);
 
         boolean res = true;
         for (FileSystemElement element : elements) {
-            FileSystemElement fileToDelete = currentDir.find(element.getName(),element.getType());
-            res = currentDir.getContents().remove(fileToDelete) && res;          
+            FileSystemElement fileToDelete = currentDir.find(element.getName(), element.getType());
+            res = currentDir.getContents().remove(fileToDelete) && res;
         }
 
         return fileSystem.saveFileSystem() && res;
     }
 
-    public static boolean deleteItem(String username, String path, String itemName, String itemType){
+    public static boolean deleteItem(String username, String path, String itemName, String itemType) {
         JsonFileSystem fileSystem = JsonFileSystem.getInstance();
         Directory currentDir = fileSystem.getDirectory(username, path);
         FileSystemElement fileToDelete = currentDir.find(itemName, itemType);
-        boolean res = currentDir.getContents().remove(fileToDelete);     
+        boolean res = currentDir.getContents().remove(fileToDelete);
 
         return fileSystem.saveFileSystem() && res;
     }

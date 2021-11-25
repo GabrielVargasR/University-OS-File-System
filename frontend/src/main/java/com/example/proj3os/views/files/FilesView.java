@@ -1,13 +1,16 @@
 package com.example.proj3os.views.files;
 
+import com.vaadin.flow.component.UI;
 import com.example.proj3os.controllers.DownloadLink;
 import com.example.proj3os.controllers.FileController;
+import com.example.proj3os.helper.Common;
 import com.example.proj3os.model.Breadcrumb;
 import com.example.proj3os.model.File;
 import com.example.proj3os.model.Directory;
 import com.example.proj3os.model.FileSystemElement;
 import com.example.proj3os.model.SessionInfo;
 import com.example.proj3os.views.MainLayout;
+import com.example.proj3os.views.file.FileDisplay;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -30,6 +33,8 @@ import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.router.RouterLink;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,8 +43,10 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -264,7 +271,9 @@ public class FilesView extends VerticalLayout {
                 updateMenuBar(grid, this.menuBar);
                 updateGrid(grid);
             } else {
-                add(new Paragraph("Aquí (FilesView.java) iría el código para abrir el archivo"));
+                String fileParam = Common.getBuilder().toJson(event.getItem()); 
+
+                UI.getCurrent().navigate(FileDisplay.class, fileParam);
             }
         });
         

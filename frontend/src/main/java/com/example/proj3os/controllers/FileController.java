@@ -86,6 +86,33 @@ public class FileController {
         return false;
     }
 
+    public static boolean modifyFile(String pFileName, String username, String path, String created, String modified, String extension, String size, String content){
+        try {
+            String endpoint = "http://localhost:3000/api/modifyFile?fileName=" + URLEncoder.encode(pFileName+"&user="+username+"&path="+path+"&created="+created+"&modified="+modified+"&extension="+extension+"&size="+size+"&content="+content, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+            System.out.println(endpoint);
+            if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
+                return true;
+            }
+        } catch (MalformedURLException | UnsupportedEncodingException f) {
+            return false;
+        }
+        return false;
+    }
+
+    public static File openFile(String pFileName, String username, String path){
+        String url = "";
+        try {
+            url = "http://localhost:3000/api/opneFile?username=" + URLEncoder.encode(username + "&path="+path, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        ReadContext json = JsonPath.parse(Common.readJsonFromUrl(url));
+        File fileSystemElement = Common.getBuilder().fromJson(json.jsonString(), File.class);
+
+
+        return fileSystemElement;
+    }
+
     public static List<FileSystemElement> getFiles(String user, String path) {
         String url = "";
         try {
