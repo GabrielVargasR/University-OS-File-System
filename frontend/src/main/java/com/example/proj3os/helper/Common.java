@@ -66,6 +66,24 @@ public class Common {
         return 404;
     }
 
+    public static int makePOSTCallWithBody(URL url, FileSystemElement element) {
+        try {
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setDoOutput(true);
+            con.setRequestProperty("Content-Type", "application/json");
+            con.setRequestMethod("POST");
+
+            OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+            wr.write(getBuilder().toJson(element));
+            wr.flush();
+            
+            int responseCode = con.getResponseCode();
+            con.disconnect();
+            return responseCode;
+        } catch (IOException ignored) {}
+        return 404;
+    }
+
     public static Gson getBuilder(){
         final RuntimeTypeAdapterFactory<FileSystemElement> typeFactory = RuntimeTypeAdapterFactory
                 .of(FileSystemElement.class, TYPE, true) // Here you specify which is the parent class and what field particularizes the child class.
