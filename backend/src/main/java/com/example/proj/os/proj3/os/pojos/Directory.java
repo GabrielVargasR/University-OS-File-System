@@ -8,9 +8,14 @@ import com.example.proj.os.proj3.os.IConstants;
 public class Directory extends FileSystemElement implements IConstants {
     ArrayList<FileSystemElement> contents;
 
-    public Directory(String name, String type, ArrayList<FileSystemElement> contents) {
-        super(name, type);
+    public Directory(String name, ArrayList<FileSystemElement> contents) {
+        super(name, DIRECTORY);
         this.contents = contents;
+    }
+
+    public Directory(String name) {
+        super(name, DIRECTORY);
+        this.contents = new ArrayList<FileSystemElement>();
     }
 
     public ArrayList<FileSystemElement> getContents() {
@@ -26,6 +31,16 @@ public class Directory extends FileSystemElement implements IConstants {
         for (FileSystemElement element : getContents()) {
             if (element.getName() == pFileName && element.getType() == FILE) {
                 return (File) element;
+            }
+        }
+        return null;
+    }
+
+    // ? Es medio contradictorio tener esta funcion y el getDirectory arriba.
+    public Directory findDir(String pDirName){
+        for (FileSystemElement element : getContents()) {
+            if (element.getName() == pDirName && element.getType() == DIRECTORY) {
+                return (Directory) element;
             }
         }
         return null;

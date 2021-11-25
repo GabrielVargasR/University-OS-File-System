@@ -54,4 +54,20 @@ public class JsonManager implements IConstants {
         }
         return true;
     }
+
+    public boolean createFileSystem(FileSystem fileSystem){
+        try{
+            java.io.File writer = new java.io.File(FILE_SYSTEM_PATH + FILEPATH_SEPARATOR + fileSystem.getUsername() + EXTENSION);
+            writer.createNewFile();
+            writeToFileSystem(fileSystem);
+        } catch (IOException ioException){
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkIfFsExist(String pName) {
+        return Files.exists(Paths.get(FILE_SYSTEM_PATH + FILEPATH_SEPARATOR + pName + EXTENSION));
+        
+    }
 }

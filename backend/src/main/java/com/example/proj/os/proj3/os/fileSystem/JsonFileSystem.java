@@ -18,6 +18,14 @@ public class JsonFileSystem implements IConstants {
         return jsonFileSystem;
     }
 
+    public FileSystem getFileSystem(String pUsername) {
+        if (jsonManager.checkIfFsExist(pUsername)) {
+            loadFileSystem(pUsername);
+            return fileSystem;  
+        }
+        return null;
+    }
+
     public Directory getDirectory(String pUsername, String pPath) {
         loadFileSystem(pUsername);
         return getDirectoryAux(fileSystem.getFiles(), pPath.split(FILEPATH_SEPARATOR), 0);
@@ -41,6 +49,15 @@ public class JsonFileSystem implements IConstants {
 
         // Not Found
         return null;
+    }
+
+    public boolean saveFileSystem() {
+        return jsonManager.writeToFileSystem(fileSystem);
+    }
+
+    public boolean createFileSyste(String pUsername, String pPassword) {
+        FileSystem fs = new FileSystem(pUsername, pPassword, new Directory(ROOT_NAME));
+        return jsonManager.createFileSystem(fs);
     }
 
     private Directory getDirectoryAux(Directory pRoot, String[] pPath, int pPathIndex){
