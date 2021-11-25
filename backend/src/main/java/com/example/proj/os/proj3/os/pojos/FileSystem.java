@@ -1,19 +1,38 @@
 package com.example.proj.os.proj3.os.pojos;
 
-import java.util.ArrayList;
-
 public class FileSystem {
-    private ArrayList<User> users;
+    private String username;
+    private String password;
+    private Directory files;
 
-    public FileSystem(ArrayList<User> users) {
-        this.users = users;
+    public FileSystem (String username, String password, Directory files) {
+        this.username = username;
+        this.password = password;
+        this.files = files;
     }
 
-    public ArrayList<User> getUsers() {
-        return users;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUsers(ArrayList<User> users) {
-        this.users = users;
+    public void setUsername(String username) {
+        this.username = username;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Directory getFiles() {
+        return files;
+    }
+
+    public void setFiles(Directory files) {
+        this.files = files;
+    }
+
 }

@@ -2,6 +2,7 @@ package com.example.proj3os.controllers;
 
 import com.example.proj3os.helper.Common;
 import com.example.proj3os.model.Directory;
+import com.example.proj3os.model.File;
 import com.example.proj3os.model.FileSystemElement;
 import com.example.proj3os.model.SessionInfo;
 import com.jayway.jsonpath.JsonPath;
@@ -15,6 +16,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.proj3os.helper.IConstants.DIRECTORY;
 
 public class FileController {
     public FileController() {}
@@ -69,6 +72,19 @@ public class FileController {
         return false;
     }
 
+    public static boolean createFile(String pFileName, String username, String path, String created, String modified, String extension, String size, String content){
+        try {
+            String endpoint = "http://localhost:3000/api/createFile?fileName=" + URLEncoder.encode(pFileName+"&user="+username+"&path="+path+"&created="+created+"&modified="+modified+"&extension="+extension+"&size="+size+"&content="+content, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+            System.out.println(endpoint);
+            if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
+                return true;
+            }
+        } catch (MalformedURLException | UnsupportedEncodingException f) {
+            return false;
+        }
+        return false;
+    }
+
     public static List<FileSystemElement> getFiles(String user, String path) {
         String url = "";
         try {
@@ -108,6 +124,37 @@ public class FileController {
         } catch (MalformedURLException | UnsupportedEncodingException e) {
             return false;
         }
+        return false;
+    }
+
+    public static boolean copyFile(FileSystemElement fileToCopy, String currentDirectory, String targetDirectory) {
+        //String newName = newNameWithIndex(fileToCopy.getName());
+
+        if(fileToCopy.getType().equals(DIRECTORY)){
+            System.out.println("UNSUPORTED");
+//            try {
+////                String endpoint = "http://localhost:3000/api/createDirectory?dirName=" + URLEncoder.encode(newName+"&user="+user+"&path="+currentPath, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+////                System.out.println(endpoint);
+////                if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
+////                    return true;
+////                }
+//            } catch (MalformedURLException | UnsupportedEncodingException e) {
+//                return false;
+//            }
+        } else {
+            try {
+                File file = (File) fileToCopy;
+                String endpoint = "http://localhost:3000/api/createFile?fileName=" + URLEncoder.encode(file.getName()+"&user="+SessionInfo.getInstance().getUsername()+"&path="+targetDirectory+"&created="+file.getCreation()+"&modified="+file.getModified()+"&extension="+file.getExtension()+"&size="+file.getSize()+"&content="+file.getContents(), StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+                System.out.println(endpoint);
+                if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
+                    return true;
+                }
+            } catch (MalformedURLException | UnsupportedEncodingException f) {
+                return false;
+            }
+        }
+
+
         return false;
     }
 }

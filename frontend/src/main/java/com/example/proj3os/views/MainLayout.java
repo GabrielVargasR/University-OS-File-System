@@ -145,6 +145,7 @@ public class MainLayout extends AppLayout {
         menu.addItem("Logout", e -> {
             session.setUsername("");
             session.setCurrentDirectory(ROOT);
+            session.setCurrentModalDirectory(ROOT);
             UI.getCurrent().navigate(LoginView.class);
         });
 
