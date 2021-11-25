@@ -66,12 +66,25 @@ public class FileController {
     }
 
     @PostMapping(value = "/api/deleteItems", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteFiles(@RequestBody String directoryJson, @RequestParam("user") String user, @RequestParam("path") String path){
+    public ResponseEntity<?> deleteItems(@RequestBody String directoryJson, @RequestParam("user") String user, @RequestParam("path") String path){
         try {
             Directory directory = JsonManager.getBuilder().fromJson(directoryJson, Directory.class);
             FileManager.deleteItems(user, path, directory.getContents());
             
             return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/api/deleteItem", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> deleteItem(@RequestParam("itemName") String itemName, @RequestParam("itemType") String itemType, @RequestParam("user") String user, @RequestParam("path") String path){
+        try {
+            if(FileManager.deleteItem(user, path, itemName, itemType)){
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

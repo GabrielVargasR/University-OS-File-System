@@ -81,6 +81,7 @@ public class FileManager {
         return currentDir;
     }
 
+    // unused
     public boolean deleteFile(String username, String path, String fileName) {
         JsonFileSystem fileSystem = JsonFileSystem.getInstance();
         Directory currentDir = fileSystem.getDirectory(username, path);
@@ -103,11 +104,11 @@ public class FileManager {
         return fileSystem.saveFileSystem() && res;
     }
 
-    public boolean deleteDir(String username, String path, String dirName){
+    public static boolean deleteItem(String username, String path, String itemName, String itemType){
         JsonFileSystem fileSystem = JsonFileSystem.getInstance();
         Directory currentDir = fileSystem.getDirectory(username, path);
-        Directory dirToDelete = currentDir.findDir(dirName);
-        boolean res = currentDir.getContents().remove(dirToDelete);
+        FileSystemElement fileToDelete = currentDir.find(itemName, itemType);
+        boolean res = currentDir.getContents().remove(fileToDelete);     
 
         return fileSystem.saveFileSystem() && res;
     }
