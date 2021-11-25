@@ -76,7 +76,7 @@ public class FilesView extends VerticalLayout {
         session.getBreadCrumbs().add(new Breadcrumb(ROOT, session.getCurrentDirectory(), session.getBreadCrumbs().size()));
         updateMenuBar(grid, menuBar);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, createDownloadButton());
+        HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, createDownloadButton(), createDeleteButton());
 
         add(menuBar, grid, horizontalLayout, dialog);
     }
@@ -86,7 +86,6 @@ public class FilesView extends VerticalLayout {
         Button downloadButton = new Button(new Icon(VaadinIcon.DOWNLOAD_ALT));
         downloadButton.addClickListener(event ->{
             Set<FileSystemElement> selected = this.grid.asMultiSelect().getValue();
-            System.out.println(selected.toString());
             for (FileSystemElement fileSystemElement : selected) {
                 if (fileSystemElement.getType().equals(FILE)) {
                     try {
@@ -112,6 +111,18 @@ public class FilesView extends VerticalLayout {
         });
 
         return downloadButton;
+    }
+
+    private Button createDeleteButton(){
+
+        Button deleteButton = new Button(new Icon(VaadinIcon.TRASH));
+        deleteButton.addClickListener(event ->{
+            Set<FileSystemElement> selected = this.grid.asMultiSelect().getValue();
+            SessionInfo session = SessionInfo.getInstance();
+            FileController.deleteItems(session.getUsername(), session.getCurrentDirectory(), selected);
+        });
+
+        return deleteButton;
     }
 
     public void updateGrid(Grid<FileSystemElement> grid){

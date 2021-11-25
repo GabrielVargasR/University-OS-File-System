@@ -16,6 +16,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static com.example.proj3os.helper.IConstants.DIRECTORY;
 
@@ -125,6 +126,27 @@ public class FileController {
             return false;
         }
         return false;
+    }
+
+    public static boolean deleteItems(String username, String currentPath, Set<FileSystemElement> elements ) {
+        try {
+            StringBuilder str = new StringBuilder();
+            str.append("http://localhost:3000/api/");
+            str.append("deleteItems");
+            str.append("&user=");
+            str.append(username);
+            str.append("&path=");
+            str.append(currentPath);
+
+            URL url = new URL(str.toString());
+
+            Directory dir = new Directory("TEMP", DIRECTORY, new ArrayList<FileSystemElement>(elements));
+            
+
+            return Common.makePOSTCallWithBody(url, dir) == HttpStatus.OK.value();
+        } catch (MalformedURLException e) {
+            return false;
+        }
     }
 
     public static boolean copyFile(FileSystemElement fileToCopy, String currentDirectory, String targetDirectory) {
