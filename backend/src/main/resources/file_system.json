@@ -1,39 +1,115 @@
 {
-  "sebas": {
-    "password": "123456",
-    "files": []
-  },
-  "gabo": {
-    "password": "safe123",
-    "files": [
-      {
-        "name": "dir1",
-        "type": "directory",
-        "contents": [
-          {
-            "name": "file2",
-            "type": "file",
-            "extension": "txt",
-            "creation": "2021-11-12",
-            "modified": "2021-11-12",
-            "size": "12",
-            "contents": "Hola, esto es otro archivo de prueba"
-          }
-        ]
-      },
-      {
-        "name": "file1",
-        "type": "file",
-        "extension": "txt",
-        "creation": "2021-11-12",
-        "modified": "2021-11-12",
-        "size": "12",
-        "contents": "Hola, esto es un archivo de prueba"
-      }
-    ]
-  },
-  "edu": {
-    "password": "abcdef",
-    "files": []
-  }
+  "users": [
+    {
+      "username": "sebas",
+      "password": "123456",
+      "files": []
+    },
+    {
+      "username": "gabo",
+      "password": "safe123",
+      "files": [
+        {
+          "contents": [
+            {
+              "extension": "txt",
+              "creation": "2021-11-12",
+              "modified": "2021-11-12",
+              "size": 12,
+              "contents": "Hola, esto es otro archivo de prueba 1",
+              "name": "file2",
+              "type": "file"
+            },
+            {
+              "contents": [
+                {
+                  "extension": "txt",
+                  "creation": "22/11/2021 17:54:39",
+                  "modified": "22/11/2021 17:54:39",
+                  "size": 0,
+                  "contents": "",
+                  "name": "New File",
+                  "type": "file"
+                },
+                {
+                  "contents": [],
+                  "name": "New Folder",
+                  "type": "directory"
+                }
+              ],
+              "name": "dir3",
+              "type": "directory"
+            }
+          ],
+          "name": "dir1",
+          "type": "directory"
+        },
+        {
+          "contents": [
+            {
+              "extension": "txt",
+              "creation": "2021-11-12",
+              "modified": "2021-11-12",
+              "size": 12,
+              "contents": "Hola, esto es otro archivo de prueba 2",
+              "name": "file2",
+              "type": "file"
+            }
+          ],
+          "name": "dir2",
+          "type": "directory"
+        },
+        {
+          "extension": "txt",
+          "creation": "2021-11-12",
+          "modified": "2021-11-12",
+          "size": 12,
+          "contents": "Hola, esto es un archivo de prueba",
+          "name": "file1",
+          "type": "file"
+        },
+        {
+          "extension": "txt",
+          "creation": "22/11/2021 01:44:45",
+          "modified": "22/11/2021 01:44:45",
+          "size": 0,
+          "contents": "",
+          "name": "New File",
+          "type": "file"
+        },
+        {
+          "extension": "txt",
+          "creation": "22/11/2021 01:44:59",
+          "modified": "22/11/2021 01:44:59",
+          "size": 0,
+          "contents": "",
+          "name": "New File0",
+          "type": "file"
+        },
+        {
+          "extension": "txt",
+          "creation": "22/11/2021 01:45:05",
+          "modified": "22/11/2021 01:45:05",
+          "size": 0,
+          "contents": "",
+          "name": "New File1",
+          "type": "file"
+        },
+        {
+          "extension": "txt",
+          "creation": "24/11/2021 01:07:20",
+          "modified": "24/11/2021 01:07:20",
+          "size": 10,
+          "contents": "Hola Mundo",
+          "name": "test",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "username": "edu",
+      "password": "abcdef",
+      "files": []
+    }
+  ]
 }
