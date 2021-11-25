@@ -1,6 +1,6 @@
 package com.example.proj.os.proj3.os.controllers;
 
-import com.example.proj.os.proj3.os.fileSystem.FileModifier;
+import com.example.proj.os.proj3.os.fileSystem.FileManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ public class FileController {
     @GetMapping(value = "/api/file", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> listDirectory(@RequestParam("username") String username, @RequestParam("path") String path){
         try {
-            Object files = FileModifier.getDirectoryContents(username, path);
+            Object files = FileManager.getDirectoryContents(username, path);
             return new ResponseEntity<>(files, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getStackTrace(), HttpStatus.NOT_FOUND);
@@ -31,7 +31,7 @@ public class FileController {
                                         @RequestParam(value = "size", required = false) String size,
                                         @RequestParam(value = "content", required = false) String content){
         try {
-            if(FileModifier.createFile(pFileName, user, path, created, modified, extension, size, content)){
+            if(FileManager.createFile(pFileName, user, path, created, modified, extension, size, content)){
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -44,7 +44,7 @@ public class FileController {
     @GetMapping(value = "/api/createDirectory", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createDirectory(@RequestParam("dirName") String dirName, @RequestParam("user") String user, @RequestParam("path") String path){
         try {
-            if(FileModifier.createDirectory(dirName, user, path)){
+            if(FileManager.createDirectory(dirName, user, path)){
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

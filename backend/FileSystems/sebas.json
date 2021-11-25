@@ -1,0 +1,9 @@
+{
+    "username": "sebas",
+    "password": "1234",
+    "files": {
+        "name": "root",
+        "type": "directory",
+        "contents": []
+      }
+}
