@@ -17,6 +17,21 @@
             "modified": "2021-11-12",
             "size": "12",
             "contents": "Hola, esto es otro archivo de prueba"
+          },
+          {
+            "name": "dir1",
+            "type": "directory",
+            "contents": [
+              {
+                "name": "file2",
+                "type": "file",
+                "extension": "txt",
+                "creation": "2021-11-12",
+                "modified": "2021-11-12",
+                "size": "12",
+                "contents": "Hola, esto es otro archivo de prueba"
+              }
+            ]
           }
         ]
       },

@@ -28,7 +28,7 @@ public class JsonFileSystem implements IConstants {
 
     public Directory getDirectory(String pUsername, String pPath) {
         loadFileSystem(pUsername);
-        return getDirectoryAux(fileSystem.getFiles(), pPath.split(FILEPATH_SEPARATOR), 0);
+        return getDirectoryAux(fileSystem.getFiles(), pPath.split(FILEPATH_SEPARATOR), 1);
     }
 
     public File getFile(String pUsername, String pPath) {
@@ -41,7 +41,7 @@ public class JsonFileSystem implements IConstants {
 
         if (dir != null) {
             for (FileSystemElement element : dir.getContents()) {
-                if (element.getName() == fileName && element.getType() == FILE) {
+                if (element.getName().equals(fileName) && element.getType().equals(FILE)) {
                     return (File) element;
                 }
             }
@@ -66,7 +66,7 @@ public class JsonFileSystem implements IConstants {
         }
         
         for (FileSystemElement element : pRoot.getContents()) {
-            if (element.getName() == pPath[pPathIndex] && element.getType() == DIRECTORY) {
+            if (element.getName().equals(pPath[pPathIndex]) && element.getType().equals(DIRECTORY)) {
                 return getDirectoryAux(pRoot, pPath, pPathIndex+1);
             }
         }
