@@ -21,7 +21,7 @@ public class JsonManager implements IConstants {
 
     private static final String EXTENSION = ".json";
 
-    public Gson getBuilder(){
+    public static Gson getBuilder(){
         final RuntimeTypeAdapterFactory<FileSystemElement> typeFactory = RuntimeTypeAdapterFactory
                 .of(FileSystemElement.class, TYPE, true) // Here you specify which is the parent class and what field particularizes the child class.
                 .registerSubtype(Directory.class, DIRECTORY) // if the flag equals the class name, you can skip the second parameter. This is only necessary, when the "type" field does not equal the class name.

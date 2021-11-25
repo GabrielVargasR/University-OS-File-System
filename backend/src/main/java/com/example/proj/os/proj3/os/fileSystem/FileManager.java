@@ -80,4 +80,35 @@ public class FileManager {
         }
         return currentDir;
     }
+
+    public boolean deleteFile(String username, String path, String fileName) {
+        JsonFileSystem fileSystem = JsonFileSystem.getInstance();
+        Directory currentDir = fileSystem.getDirectory(username, path);
+        File fileToDelete = currentDir.findFile(fileName);
+        boolean res = currentDir.getContents().remove(fileToDelete);
+
+        return fileSystem.saveFileSystem() && res;
+    }
+
+    public static boolean deleteItems(String username, String path, ArrayList<FileSystemElement> elements ) {
+        JsonFileSystem fileSystem = JsonFileSystem.getInstance();
+        Directory currentDir = fileSystem.getDirectory(username, path);
+
+        boolean res = true;
+        for (FileSystemElement element : elements) {
+            FileSystemElement fileToDelete = currentDir.find(element.getName(),element.getType());
+            res = currentDir.getContents().remove(fileToDelete) && res;          
+        }
+
+        return fileSystem.saveFileSystem() && res;
+    }
+
+    public boolean deleteDir(String username, String path, String dirName){
+        JsonFileSystem fileSystem = JsonFileSystem.getInstance();
+        Directory currentDir = fileSystem.getDirectory(username, path);
+        Directory dirToDelete = currentDir.findDir(dirName);
+        boolean res = currentDir.getContents().remove(dirToDelete);
+
+        return fileSystem.saveFileSystem() && res;
+    }
 }
