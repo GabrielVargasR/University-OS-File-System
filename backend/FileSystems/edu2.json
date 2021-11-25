@@ -2,7 +2,17 @@
   "username": "edu2",
   "password": "1234",
   "files": {
-    "contents": [],
+    "contents": [
+      {
+        "extension": "txt",
+        "creation": "24/11/2021 21:30:22",
+        "modified": "24/11/2021 21:30:22",
+        "size": 0,
+        "contents": "",
+        "name": "A New File",
+        "type": "file"
+      }
+    ],
     "name": "ROOT",
     "type": "directory"
   }

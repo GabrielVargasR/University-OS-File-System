@@ -29,7 +29,7 @@ public class Directory extends FileSystemElement implements IConstants {
     // ? Es medio contradictorio tener esta funcion y el getDirectory arriba.
     public File findFile(String pFileName){
         for (FileSystemElement element : getContents()) {
-            if (element.getName() == pFileName && element.getType() == FILE) {
+            if (element.getName().equals(pFileName) && element.getType().equals(FILE)) {
                 return (File) element;
             }
         }
@@ -39,7 +39,7 @@ public class Directory extends FileSystemElement implements IConstants {
     // ? Es medio contradictorio tener esta funcion y el getDirectory arriba.
     public Directory findDir(String pDirName){
         for (FileSystemElement element : getContents()) {
-            if (element.getName() == pDirName && element.getType() == DIRECTORY) {
+            if (element.getName().equals(pDirName) && element.getType().equals(DIRECTORY)) {
                 return (Directory) element;
             }
         }

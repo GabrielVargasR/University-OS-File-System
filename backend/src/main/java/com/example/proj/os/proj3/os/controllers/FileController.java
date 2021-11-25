@@ -25,11 +25,12 @@ public class FileController {
     public ResponseEntity<?> createFile(@RequestParam("fileName") String pFileName,
                                         @RequestParam("user") String user,
                                         @RequestParam("path") String path,
+                                        @RequestParam(value = "content") String content,
                                         @RequestParam(value = "created", required = false) String created,
                                         @RequestParam(value = "modified", required = false) String modified,
                                         @RequestParam(value = "extension", required = false) String extension,
-                                        @RequestParam(value = "size", required = false) String size,
-                                        @RequestParam(value = "content", required = false) String content){
+                                        @RequestParam(value = "size", required = false) String size)
+                                        {
         try {
             if(FileManager.createFile(pFileName, user, path, created, modified, extension, size, content)){
                 return new ResponseEntity<>(HttpStatus.OK);
