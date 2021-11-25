@@ -1,7 +1,9 @@
 package com.example.proj3os.views.files;
 
+import com.example.proj3os.controllers.DownloadLink;
 import com.example.proj3os.controllers.FileController;
 import com.example.proj3os.model.Breadcrumb;
+import com.example.proj3os.model.File;
 import com.example.proj3os.model.FileSystemElement;
 import com.example.proj3os.model.SessionInfo;
 import com.example.proj3os.views.MainLayout;
@@ -13,6 +15,7 @@ import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -21,15 +24,22 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.example.proj3os.helper.IConstants.DIRECTORY;
-import static com.example.proj3os.helper.IConstants.ROOT;
+import static com.example.proj3os.helper.IConstants.*;
 
 
 @PageTitle("Files")
@@ -39,6 +49,10 @@ public class FilesView extends VerticalLayout {
     private Grid<FileSystemElement> dialogGrid;
     private final MenuBar menuBar;
     private final Dialog dialog = new Dialog();
+    MemoryBuffer memoryBuffer = new MemoryBuffer();
+    Upload singleFileUpload = new Upload(memoryBuffer);
+    DownloadLink downloadLink = new DownloadLink();
+
 
     public FilesView() {
         SessionInfo session = SessionInfo.getInstance();
@@ -64,6 +78,23 @@ public class FilesView extends VerticalLayout {
             }
         });
 
+        this.grid.asSingleSelect().addValueChangeListener(event -> {
+            if(event.getValue()!=null){
+                FileSystemElement fileSystemElement = event.getValue();
+                session.setFileToDownload(event.getValue().getName());
+                assert fileSystemElement!=null;
+                if(fileSystemElement.getType().equals(FILE)){
+                    try {
+                        FileWriter myWriter = new FileWriter("temp.txt");
+                        myWriter.write(((File) fileSystemElement).getContents());
+                        myWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
         updateGrid(grid);
 
         dialog.add(createDialogueLayout(dialog));
@@ -72,7 +103,56 @@ public class FilesView extends VerticalLayout {
         session.getBreadCrumbs().clear();
         session.getBreadCrumbs().add(new Breadcrumb(ROOT, session.getCurrentDirectory(), session.getBreadCrumbs().size()));
         updateMenuBar(grid, menuBar);
-        add(menuBar, grid, dialog);
+
+        singleFileUpload.addSucceededListener(event -> {
+            // Get information about the uploaded file
+            InputStream fileData = memoryBuffer.getInputStream();
+            String fileName = event.getFileName();
+            long contentLength = event.getContentLength();
+            String mimeType = event.getMIMEType();
+
+            // Do something with the file data
+            try {
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = new Date();
+                String text = new String(fileData.readAllBytes(), StandardCharsets.UTF_8);
+
+                String[] file = fileName.split("\\.");
+                assert file.length <= 2;
+                fileName = file[0];
+                String fileExtension = file[1];
+
+                FileController.createFile(fileName,
+                        session.getUsername(),
+                        session.getCurrentDirectory(),
+                        formatter.format(date),
+                        formatter.format(date),
+                        fileExtension,
+                        String.valueOf(contentLength),
+                        text);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            updateGrid(grid);
+            // processFile(fileData, fileName, contentLength, mimeType);
+        });
+
+        try{
+            FileWriter writer = new FileWriter("temp.txt", false);
+            writer.write("");
+            writer.close();
+        } catch (Exception ignored){}
+
+        java.io.File file = new java.io.File("temp.txt");
+        Anchor download = new Anchor(new DownloadLink().getStreamResource(file.getName(), file), session.getFileToDownload());
+        download.getElement().setAttribute("download", true);
+        download.removeAll();
+        download.add(new Button(new Icon(VaadinIcon.DOWNLOAD_ALT)));
+
+        download.setEnabled(true);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, download);
+
+        add(menuBar, grid, horizontalLayout, dialog);
     }
 
     public void updateGrid(Grid<FileSystemElement> grid){

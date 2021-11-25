@@ -10,6 +10,7 @@ public class SessionInfo {
     private static String currentDirectory;
     private static String currentModalDirectory = ROOT;
     private static FileSystemElement fileToCopy;
+    private static String fileToDownload;
 
     private static ArrayList<Breadcrumb> breadCrumbs = new ArrayList<>();
 
@@ -57,5 +58,13 @@ public class SessionInfo {
 
     public void setFileToCopy(FileSystemElement fileToCopy) {
         SessionInfo.fileToCopy = fileToCopy;
+    }
+
+    public String getFileToDownload() {
+        return fileToDownload;
+    }
+
+    public void setFileToDownload(String fileToDownload) {
+        SessionInfo.fileToDownload = fileToDownload;
     }
 }
