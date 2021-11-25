@@ -38,6 +38,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,45 +76,43 @@ public class FilesView extends VerticalLayout {
         session.getBreadCrumbs().add(new Breadcrumb(ROOT, session.getCurrentDirectory(), session.getBreadCrumbs().size()));
         updateMenuBar(grid, menuBar);
 
-        
-
-        try{
-            FileWriter writer = new FileWriter("temp.txt", false);
-            writer.write("");
-            writer.close();
-        } catch (Exception ignored){}
-
-        
-        HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, download);
+        HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, createDownloadButton());
 
         add(menuBar, grid, horizontalLayout, dialog);
     }
 
-    // private void addDownloadFeature(HorizontalLayout layout){
-    //     java.io.File file = new java.io.File("temp.txt");
-    //     Anchor download = new Anchor(new DownloadLink().getStreamResource(file.getName(), file), session.getFileToDownload());
-    //     download.getElement().setAttribute("download", true);
-    //     download.removeAll();
-    //     download.add();
-    //     download.
+    private Button createDownloadButton(){
 
-    //     download.setEnabled(true);
+        Button downloadButton = new Button(new Icon(VaadinIcon.DOWNLOAD_ALT));
+        downloadButton.addClickListener(event ->{
+            Set<FileSystemElement> selected = this.grid.asMultiSelect().getValue();
+            System.out.println(selected.toString());
+            for (FileSystemElement fileSystemElement : selected) {
+                if (fileSystemElement.getType().equals(FILE)) {
+                    try {
+                        FileWriter myWriter = new FileWriter(fileSystemElement.getName(), false);
+                        myWriter.write(((File) fileSystemElement).getContents());
+                        myWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    } 
+                    java.io.File file = new java.io.File(fileSystemElement.getName());
+                    Anchor download = new Anchor(new DownloadLink().getStreamResource(file.getName(), file), "");
+                    download.getElement().setAttribute("download", true);
+                    download.removeAll();
+                    Button dummyButton = new Button();
+                    download.add(dummyButton);
+                    download.setEnabled(true);
+                    dummyButton.click();
+                }
 
-       
+            }
+            
+        });
 
-
-    //     Button downloadButton =  new Button(new Icon(VaadinIcon.DOWNLOAD_ALT));
-    //     downloadButton.addAttachListener(event -> {
-
-    //     });
-
-    //     StreamResource myResource = createResource();
-    //     FileDownloader fileDownloader = new FileDownloader(myResource);
-    //     fileDownloader.extend(downloadButton);
-
-    //     setContent(downloadButton);
-
-    // }
+        return downloadButton;
+    }
 
     public void updateGrid(Grid<FileSystemElement> grid){
         grid.setItems(FileController.getFiles(SessionInfo.getInstance().getUsername(), SessionInfo.getInstance().getCurrentDirectory()));
@@ -217,7 +216,6 @@ public class FilesView extends VerticalLayout {
         initGridContextMenu(gridContextMenu, grid);
         grid.setSelectionMode(SelectionMode.MULTI);
 
-
         grid.addComponentColumn(item -> {
             Icon icon;
             if (item.getType().equals(DIRECTORY)) {
@@ -255,23 +253,6 @@ public class FilesView extends VerticalLayout {
                 updateGrid(grid);
             } else {
                 add(new Paragraph("Aquí (FilesView.java) iría el código para abrir el archivo"));
-            }
-        });
-
-        this.grid.asSingleSelect().addValueChangeListener(event -> {
-            if(event.getValue()!=null){
-                FileSystemElement fileSystemElement = event.getValue();
-                session.setFileToDownload(event.getValue().getName());
-                assert fileSystemElement!=null;
-                if(fileSystemElement.getType().equals(FILE)){
-                    try {
-                        FileWriter myWriter = new FileWriter("temp.txt");
-                        myWriter.write(((File) fileSystemElement).getContents());
-                        myWriter.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         });
         
