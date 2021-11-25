@@ -2,48 +2,57 @@
   "username": "gabo",
   "password": "safe123",
   "files": {
-    "name": "root",
-    "type": "directory",
     "contents": [
       {
-        "name": "dir1",
-        "type": "directory",
         "contents": [
           {
-            "name": "file2",
-            "type": "file",
             "extension": "txt",
             "creation": "2021-11-12",
             "modified": "2021-11-12",
-            "size": "12",
-            "contents": "Hola, esto es otro archivo de prueba"
+            "size": 12,
+            "contents": "Hola, esto es otro archivo de prueba",
+            "name": "file2",
+            "type": "file"
           },
           {
-            "name": "dir1",
-            "type": "directory",
             "contents": [
               {
-                "name": "file2",
-                "type": "file",
                 "extension": "txt",
                 "creation": "2021-11-12",
                 "modified": "2021-11-12",
-                "size": "12",
-                "contents": "Hola, esto es otro archivo de prueba"
+                "size": 12,
+                "contents": "Hola, esto es otro archivo de prueba",
+                "name": "file2",
+                "type": "file"
               }
-            ]
+            ],
+            "name": "dir1",
+            "type": "directory"
+          },
+          {
+            "extension": "txt",
+            "creation": "24/11/2021 21:34:32",
+            "modified": "24/11/2021 21:34:32",
+            "size": 0,
+            "contents": "",
+            "name": "A New File",
+            "type": "file"
           }
-        ]
+        ],
+        "name": "dir1",
+        "type": "directory"
       },
       {
-        "name": "file1",
-        "type": "file",
         "extension": "txt",
         "creation": "2021-11-12",
         "modified": "2021-11-12",
-        "size": "12",
-        "contents": "Hola, esto es un archivo de prueba"
+        "size": 12,
+        "contents": "Hola, esto es un archivo de prueba",
+        "name": "file1",
+        "type": "file"
       }
-    ]
+    ],
+    "name": "root",
+    "type": "directory"
   }
 }

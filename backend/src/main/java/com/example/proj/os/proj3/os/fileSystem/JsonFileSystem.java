@@ -67,7 +67,7 @@ public class JsonFileSystem implements IConstants {
         
         for (FileSystemElement element : pRoot.getContents()) {
             if (element.getName().equals(pPath[pPathIndex]) && element.getType().equals(DIRECTORY)) {
-                return getDirectoryAux(pRoot, pPath, pPathIndex+1);
+                return getDirectoryAux( (Directory) element, pPath, pPathIndex+1);
             }
         }
 
