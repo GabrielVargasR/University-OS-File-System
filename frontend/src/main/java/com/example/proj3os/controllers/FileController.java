@@ -72,6 +72,19 @@ public class FileController {
         return false;
     }
 
+    public static boolean createFile(String pFileName, String username, String path, String created, String modified, String extension, String size, String content){
+        try {
+            String endpoint = "http://localhost:3000/api/createFile?fileName=" + URLEncoder.encode(pFileName+"&user="+username+"&path="+path+"&created="+created+"&modified="+modified+"&extension="+extension+"&size="+size+"&content="+content, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+            System.out.println(endpoint);
+            if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
+                return true;
+            }
+        } catch (MalformedURLException | UnsupportedEncodingException f) {
+            return false;
+        }
+        return false;
+    }
+
     public static List<FileSystemElement> getFiles(String user, String path) {
         String url = "";
         try {

@@ -94,6 +94,15 @@
           "contents": "",
           "name": "New File1",
           "type": "file"
+        },
+        {
+          "extension": "txt",
+          "creation": "24/11/2021 01:07:20",
+          "modified": "24/11/2021 01:07:20",
+          "size": 10,
+          "contents": "Hola Mundo",
+          "name": "test",
+          "type": "file"
         }
       ]
     },
