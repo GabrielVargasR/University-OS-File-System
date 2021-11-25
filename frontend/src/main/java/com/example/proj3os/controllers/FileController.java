@@ -29,10 +29,10 @@ public class FileController {
      * @param name the name
      * @return the string
      */
-    public static String newNameWithIndex(String name){
+    public static String newNameWithIndex(String name, String directory){
         ArrayList<String> filesNames = new ArrayList<>();
 
-        getFiles(SessionInfo.getInstance().getUsername(), SessionInfo.getInstance().getCurrentDirectory())
+        getFiles(SessionInfo.getInstance().getUsername(), directory)
                 .forEach(fsFile -> filesNames.add(fsFile.getName()));
 
         boolean found = false;
@@ -60,7 +60,7 @@ public class FileController {
     }
 
     public static boolean createFile(String fileName, String user, String currentPath){
-        String newName = newNameWithIndex(fileName);
+        String newName = newNameWithIndex(fileName, currentPath);
         try {
             String endpoint = "http://localhost:3000/api/createFile?fileName=" + URLEncoder.encode(newName+"&user="+user+"&path="+currentPath, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
             System.out.println(endpoint);
@@ -115,7 +115,7 @@ public class FileController {
     }
 
     public static boolean createDirectory(String folderName, String user, String currentPath) {
-        String newName = newNameWithIndex(folderName);
+        String newName = newNameWithIndex(folderName, currentPath);
         try {
             String endpoint = "http://localhost:3000/api/createDirectory?dirName=" + URLEncoder.encode(newName+"&user="+user+"&path="+currentPath, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
             System.out.println(endpoint);
@@ -150,23 +150,32 @@ public class FileController {
     }
 
     public static boolean copyFile(FileSystemElement fileToCopy, String currentDirectory, String targetDirectory) {
-        //String newName = newNameWithIndex(fileToCopy.getName());
+        String newName = newNameWithIndex(fileToCopy.getName(), targetDirectory);
 
         if(fileToCopy.getType().equals(DIRECTORY)){
-            System.out.println("UNSUPORTED");
-//            try {
-////                String endpoint = "http://localhost:3000/api/createDirectory?dirName=" + URLEncoder.encode(newName+"&user="+user+"&path="+currentPath, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
-////                System.out.println(endpoint);
-////                if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
-////                    return true;
-////                }
-//            } catch (MalformedURLException | UnsupportedEncodingException e) {
-//                return false;
-//            }
+
+            try {
+                String endpoint = "http://localhost:3000/api/createDirectory?dirName=" + URLEncoder.encode(newName+"&user="+SessionInfo.getInstance().getUsername()+"&path="+targetDirectory, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+                System.out.println(endpoint);
+                if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
+                    Directory directory = (Directory) fileToCopy;
+                    for (FileSystemElement content : directory.getContents()) {
+                        copyFile(content, currentDirectory, targetDirectory+"/"+newName);
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (MalformedURLException | UnsupportedEncodingException e) {
+                return false;
+            }
+
+
+
         } else {
             try {
                 File file = (File) fileToCopy;
-                String endpoint = "http://localhost:3000/api/createFile?fileName=" + URLEncoder.encode(file.getName()+"&user="+SessionInfo.getInstance().getUsername()+"&path="+targetDirectory+"&created="+file.getCreation()+"&modified="+file.getModified()+"&extension="+file.getExtension()+"&size="+file.getSize()+"&content="+file.getContents(), StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+                String endpoint = "http://localhost:3000/api/createFile?fileName=" + URLEncoder.encode(newName+"&user="+SessionInfo.getInstance().getUsername()+"&path="+targetDirectory+"&created="+file.getCreation()+"&modified="+file.getModified()+"&extension="+file.getExtension()+"&size="+file.getSize()+"&content="+file.getContents(), StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
                 System.out.println(endpoint);
                 if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
                     return true;

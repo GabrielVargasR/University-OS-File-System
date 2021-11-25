@@ -22,6 +22,9 @@ public class FileController {
     public ResponseEntity<?> listDirectory(@RequestParam("username") String username, @RequestParam("path") String path){
         try {
             Object files = FileManager.getDirectoryContents(username, path);
+            if(files==null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
             return new ResponseEntity<>(files, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getStackTrace(), HttpStatus.NOT_FOUND);
