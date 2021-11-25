@@ -1,6 +1,8 @@
 package com.example.proj.os.proj3.os.controllers;
 
 import com.example.proj.os.proj3.os.fileSystem.FileManager;
+import com.example.proj.os.proj3.os.fileSystem.JsonFileSystem;
+import com.example.proj.os.proj3.os.fileSystem.JsonManager;
 import com.example.proj.os.proj3.os.pojos.Directory;
 import com.example.proj.os.proj3.os.pojos.FileSystemElement;
 
@@ -61,8 +63,9 @@ public class FileController {
     }
 
     @PostMapping(value = "/api/deleteItems", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteFiles(@RequestBody Directory directory, @RequestParam("user") String user, @RequestParam("path") String path){
+    public ResponseEntity<?> deleteFiles(@RequestBody String directoryJson, @RequestParam("user") String user, @RequestParam("path") String path){
         try {
+            Directory directory = JsonManager.getBuilder().fromJson(directoryJson, Directory.class);
             FileManager.deleteItems(user, path, directory.getContents());
             
             return new ResponseEntity<>(HttpStatus.OK);

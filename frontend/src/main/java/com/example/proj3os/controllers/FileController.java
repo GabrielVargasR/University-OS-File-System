@@ -133,7 +133,7 @@ public class FileController {
             StringBuilder str = new StringBuilder();
             str.append("http://localhost:3000/api/");
             str.append("deleteItems");
-            str.append("&user=");
+            str.append("?user=");
             str.append(username);
             str.append("&path=");
             str.append(currentPath);

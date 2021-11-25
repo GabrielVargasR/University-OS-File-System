@@ -119,9 +119,10 @@ public class FilesView extends VerticalLayout {
         deleteButton.addClickListener(event ->{
             Set<FileSystemElement> selected = this.grid.asMultiSelect().getValue();
             SessionInfo session = SessionInfo.getInstance();
-            FileController.deleteItems(session.getUsername(), session.getCurrentDirectory(), selected);
+            if(FileController.deleteItems(session.getUsername(), session.getCurrentDirectory(), selected)){
+                updateGrid(grid);
+            }
         });
-
         return deleteButton;
     }
 
