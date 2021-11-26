@@ -175,7 +175,8 @@ public class FilesView extends VerticalLayout {
         SessionInfo session = SessionInfo.getInstance();
         gridContextMenu.addItem("New File", event -> {
             TextField textField = new TextField("New File Name:");
-            Dialog dialog = createNewDialog(textField, closeDialogEvent -> {
+
+            Button closeButton = new Button("Accept", closeDialogEvent -> {
                 int res = FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), false);
                 if(res == 0){
                     Notification.show("File Created");
@@ -184,23 +185,39 @@ public class FilesView extends VerticalLayout {
                 }
                 else {
                     if(res == 1){
-                        // AQUI VA DIALOG PREGUNTANDO SI SE QUIERE BORRAR
+                        String message = "A File with the same name already exists. Do you wish to replace it?";
 
+                        Button confirmButton = new Button("Confirm", confirmEvent -> {
+                            int replaceRes = FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), true);
+                            if (replaceRes == 0) {
+                                Notification.show("File Created");
+                                updateGrid(grid);
+                            }
+                            else{
+                                Notification.show("Could not create File");
+                            }
+                            dialog.close();
+                        });
+
+                        Dialog confirmDialog = createDialogConfirmation(message, confirmButton);
+                        confirmDialog.open();
 
                     }
                     else{
                         Notification.show("Could not create folder");
                     }
                 }
-                Dialog d = (Dialog) (closeDialogEvent.getSource().getParent().get());
-                d.close();
+                dialog.close();
             });
+
+            Dialog dialog = createNewDialog(textField, closeButton);
             dialog.open();
         });
 
         gridContextMenu.addItem("New Folder", event -> {
             TextField textField = new TextField("New Folder Name:");
-            Dialog dialog = createNewDialog(textField, closeDialogEvent -> {
+
+            Button closeButton = new Button("Accept", closeDialogEvent -> {
                 int res = FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), false);
                 if(res == 0){
                     Notification.show("Folder Created");
@@ -208,17 +225,32 @@ public class FilesView extends VerticalLayout {
                 } 
                 else {
                     if(res == 1){
-                        // AQUI VA DIALOG PREGUNTANDO SI SE QUIERE BORRAR
+                        String message = "A Folder with the same name already exists. Do you wish to replace it?";
 
+                        Button confirmButton = new Button("Confirm", confirmEvent -> {
+                            int replaceRes = FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), true);
+                            if (replaceRes == 0) {
+                                Notification.show("Folder Created");
+                                updateGrid(grid);
+                            }
+                            else{
+                                Notification.show("Could not create folder");
+                            }
+                            dialog.close();
+                        });
+
+                        Dialog confirmDialog = createDialogConfirmation(message, confirmButton);
+                        confirmDialog.open();
 
                     }
                     else{
                         Notification.show("Could not create folder");
                     }
                 }
-                Dialog d = (Dialog) (closeDialogEvent.getSource().getParent().get());
-                d.close();
+                dialog.close();
             });
+
+            Dialog dialog = createNewDialog(textField,  closeButton);
             dialog.open();
         });
 
@@ -370,14 +402,12 @@ public class FilesView extends VerticalLayout {
         });
     }
 
-    private Dialog createNewDialog(TextField textField, ComponentEventListener<ClickEvent<Button>> closingListener ) {
+    private Dialog createNewDialog(TextField textField, Button closeButton ) {
         Dialog dialog = new Dialog();
 
         dialog.add(textField);
         dialog.setCloseOnEsc(false);
         dialog.setCloseOnOutsideClick(false);
-
-        Button closeButton = new Button("Accept", closingListener);
 
         dialog.add(new Div(closeButton));
 
@@ -385,22 +415,20 @@ public class FilesView extends VerticalLayout {
 
     }
 
-    private void captureDialogConfirmation(String pText, Boolean boolRef) {
+    private Dialog createDialogConfirmation(String pText, Button confirmButton) {
         Dialog dialog = new Dialog();
         dialog.add(new Text(pText));
         dialog.setCloseOnEsc(false);
         dialog.setCloseOnOutsideClick(false);
         Span message = new Span();
 
-        Button confirmButton = new Button("Confirm", event -> {
-            message.setText("Confirmed!");
-            dialog.close();
-        });
         Button cancelButton = new Button("Cancel", event -> {
             message.setText("Cancelled...");
             dialog.close();
         });
 
         dialog.add(new Div( confirmButton, cancelButton));
+
+        return dialog;
     }
 }
