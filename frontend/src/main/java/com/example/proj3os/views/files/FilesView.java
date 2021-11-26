@@ -176,14 +176,21 @@ public class FilesView extends VerticalLayout {
         gridContextMenu.addItem("New File", event -> {
             TextField textField = new TextField("New File Name:");
             Dialog dialog = createNewDialog(textField, closeDialogEvent -> {
-                if(FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory())){
+                int res = FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), false);
+                if(res == 0){
                     Notification.show("File Created");
                     updateGrid(grid);
-
                     // ! Aqui llama a abrir la ventana de modify
+                }
+                else {
+                    if(res == 1){
+                        // AQUI VA DIALOG PREGUNTANDO SI SE QUIERE BORRAR
 
-                } else {
-                    Notification.show("Could not create file");
+
+                    }
+                    else{
+                        Notification.show("Could not create folder");
+                    }
                 }
                 Dialog d = (Dialog) (closeDialogEvent.getSource().getParent().get());
                 d.close();
@@ -194,11 +201,20 @@ public class FilesView extends VerticalLayout {
         gridContextMenu.addItem("New Folder", event -> {
             TextField textField = new TextField("New Folder Name:");
             Dialog dialog = createNewDialog(textField, closeDialogEvent -> {
-                if(FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory())){
+                int res = FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), false);
+                if(res == 0){
                     Notification.show("Folder Created");
                     updateGrid(grid);
-                } else {
-                    Notification.show("Could not create folder");
+                } 
+                else {
+                    if(res == 1){
+                        // AQUI VA DIALOG PREGUNTANDO SI SE QUIERE BORRAR
+
+
+                    }
+                    else{
+                        Notification.show("Could not create folder");
+                    }
                 }
                 Dialog d = (Dialog) (closeDialogEvent.getSource().getParent().get());
                 d.close();
@@ -345,7 +361,7 @@ public class FilesView extends VerticalLayout {
                         formatter.format(date),
                         fileExtension,
                         String.valueOf(contentLength),
-                        text);
+                        text, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }

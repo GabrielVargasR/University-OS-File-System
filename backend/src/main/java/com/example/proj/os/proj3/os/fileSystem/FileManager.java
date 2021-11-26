@@ -11,13 +11,13 @@ import java.util.Date;
 public class FileManager {
 
     public static boolean createFile(String fileName, String username, String path, String created, String modified,
-            String extension, String size, String content) throws Exception {
+            String extension, String size, String content, boolean replaceFlag) throws Exception {
 
         JsonFileSystem fileSystem = JsonFileSystem.getInstance();
         Directory currentDir = fileSystem.getDirectory(username, path);
 
         if (currentDir != null) {
-            if (currentDir.findFile(fileName) == null) {
+            if (replaceFlag || currentDir.findFile(fileName) == null) {
                 File newFile;
 
                 if (content == null) {
@@ -32,9 +32,7 @@ public class FileManager {
 
                 currentDir.getContents().add(newFile);
             } else {
-                // ! FALTA
-                // Archivo ya existe se podria tirar exception
-                return false;
+                throw new Exception(EXISTING_ELEMENT_MESSAGE);
             }
 
             return fileSystem.saveFileSystem();
@@ -46,13 +44,14 @@ public class FileManager {
 
     }
 
-    public static boolean modifyFile(String fileName, String username, String path, String created, String modified, String extension, String size, String content) throws Exception{
+    public static boolean modifyFile(String fileName, String username, String path, String created, String modified,
+            String extension, String size, String content) throws Exception {
         JsonFileSystem fileSystem = JsonFileSystem.getInstance();
         Directory currentDir = fileSystem.getDirectory(username, path);
 
         if (currentDir != null) {
             File file = currentDir.findFile(fileName);
-            if ( file != null) {
+            if (file != null) {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                 file.setContents(content);
                 file.setModified(formatter.format(new Date()));
@@ -74,20 +73,18 @@ public class FileManager {
 
     }
 
-    public static boolean createDirectory(String folderName, String username, String path) throws Exception {
+    public static boolean createDirectory(String folderName, String username, String path, boolean replaceFlag) throws Exception {
         JsonFileSystem fileSystem = JsonFileSystem.getInstance();
         Directory currentDir = fileSystem.getDirectory(username, path);
 
         if (currentDir != null) {
-            if (currentDir.findDir(folderName) == null) {
+            if (replaceFlag || currentDir.findDir(folderName) == null) {
 
                 Directory newDirectory = new Directory(folderName, new ArrayList<>());
                 currentDir.getContents().add(newDirectory);
 
             } else {
-                // ! FALTA
-                // Folder already exist
-                return false;
+                throw new Exception(EXISTING_ELEMENT_MESSAGE);
             }
         } else {
             // ! FALTA
