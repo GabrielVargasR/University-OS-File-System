@@ -288,9 +288,11 @@ public class FilesView extends VerticalLayout {
             SessionInfo sessionInfo = SessionInfo.getInstance();
             if (movingFlag) {
                 FileController.moveFile(sessionInfo.getFileToCopy(),sessionInfo.getCurrentDirectory(), sessionInfo.getCurrentModalDirectory());
+                updateGrid(grid);
             }
             else{
                 FileController.copyFile(sessionInfo.getFileToCopy(),sessionInfo.getCurrentDirectory(), sessionInfo.getCurrentModalDirectory());
+                updateGrid(grid);
             }
 
             dialog.close();
