@@ -4,55 +4,22 @@
   "files": {
     "contents": [
       {
-        "contents": [
-          {
-            "extension": "txt",
-            "creation": "2021-11-12",
-            "modified": "2021-11-12",
-            "size": 12,
-            "contents": "Hola, esto es otro archivo de prueba",
-            "name": "file2",
-            "type": "file"
-          },
-          {
-            "contents": [
-              {
-                "extension": "txt",
-                "creation": "2021-11-12",
-                "modified": "2021-11-12",
-                "size": 12,
-                "contents": "Hola, esto es otro archivo de prueba",
-                "name": "file2",
-                "type": "file"
-              }
-            ],
-            "name": "dir1",
-            "type": "directory"
-          },
-          {
-            "extension": "txt",
-            "creation": "24/11/2021 21:34:32",
-            "modified": "24/11/2021 21:34:32",
-            "size": 0,
-            "contents": "",
-            "name": "A New File",
-            "type": "file"
-          }
-        ],
-        "name": "dir1",
+        "contents": [],
+        "name": "Shared Folder",
         "type": "directory"
       },
       {
         "extension": "txt",
-        "creation": "2021-11-12",
-        "modified": "2021-11-12",
-        "size": 12,
-        "contents": "Hola, esto es un archivo de prueba",
-        "name": "file1",
+        "creation": "25/11/2021 23:41:10",
+        "modified": "25/11/2021 23:41:10",
+        "size": 0,
+        "contents": "",
+        "name": "Un Archivo",
         "type": "file"
       }
     ],
-    "name": "root",
+    "name": "Root",
     "type": "directory"
-  }
+  },
+  "maxSize": 1
 }
