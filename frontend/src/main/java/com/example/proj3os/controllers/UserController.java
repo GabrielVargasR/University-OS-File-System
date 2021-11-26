@@ -26,7 +26,7 @@ public class UserController {
 
     public int signup(String username, String password, int maxSize) {
         try {
-            URL url = new URL(this.urlBuilder("signup", username, password) + "?maxSize=" + Integer.toString(maxSize));
+            URL url = new URL(this.urlBuilder("signup", username, password) + "&maxSize=" + Integer.toString(maxSize));
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json");

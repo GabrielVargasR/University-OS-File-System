@@ -19,7 +19,6 @@ public class UserManager implements IConstants {
     }
 
     public boolean createUser(String pUsername, String pPassword, int pMaxSize) {
-        JsonFileSystem.getInstance().createFileSystem(pUsername, pPassword, pMaxSize);
-        return false;
+        return JsonFileSystem.getInstance().createFileSystem(pUsername, pPassword, pMaxSize);
     }
 }

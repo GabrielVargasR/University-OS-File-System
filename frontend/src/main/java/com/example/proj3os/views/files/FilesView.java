@@ -176,18 +176,27 @@ public class FilesView extends VerticalLayout {
         gridContextMenu.addItem("New File", event -> {
             TextField textField = new TextField("New File Name:");
 
-            Button closeButton = new Button("Accept", closeDialogEvent -> {
+            Button closeButton = new Button("Accept");
+            Dialog nameDialog = createNewDialog(textField, closeButton);
+
+            closeButton.addClickListener(closeDialogEvent -> {
                 int res = FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), false);
                 if(res == 0){
                     Notification.show("File Created");
                     updateGrid(grid);
-                    // ! Aqui llama a abrir la ventana de modify
+                    // ? Ni idea como agarrar el file 
+                    // grid.get
+                    // SessionInfo.setFileToOpen((File) event.getItem());
+                    // UI.getCurrent().navigate(FileDisplay.class);
                 }
                 else {
                     if(res == 1){
                         String message = "A File with the same name already exists. Do you wish to replace it?";
 
-                        Button confirmButton = new Button("Confirm", confirmEvent -> {
+                        Button confirmButton = new Button("Confirm");
+                        Dialog confirmDialog = createDialogConfirmation(message, confirmButton);
+
+                        confirmButton.addClickListener(confirmEvent -> {
                             int replaceRes = FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), true);
                             if (replaceRes == 0) {
                                 Notification.show("File Created");
@@ -196,10 +205,8 @@ public class FilesView extends VerticalLayout {
                             else{
                                 Notification.show("Could not create File");
                             }
-                            dialog.close();
-                        });
-
-                        Dialog confirmDialog = createDialogConfirmation(message, confirmButton);
+                            confirmDialog.close();
+                        }); 
                         confirmDialog.open();
 
                     }
@@ -207,17 +214,17 @@ public class FilesView extends VerticalLayout {
                         Notification.show("Could not create folder");
                     }
                 }
-                dialog.close();
-            });
-
-            Dialog dialog = createNewDialog(textField, closeButton);
-            dialog.open();
+                nameDialog.close();
+            }); 
+            nameDialog.open();
         });
 
         gridContextMenu.addItem("New Folder", event -> {
             TextField textField = new TextField("New Folder Name:");
 
-            Button closeButton = new Button("Accept", closeDialogEvent -> {
+            Button closeButton = new Button("Accept");
+            Dialog nameDialog = createNewDialog(textField,  closeButton);
+            closeButton.addClickListener(closeDialogEvent -> {
                 int res = FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), false);
                 if(res == 0){
                     Notification.show("Folder Created");
@@ -227,7 +234,10 @@ public class FilesView extends VerticalLayout {
                     if(res == 1){
                         String message = "A Folder with the same name already exists. Do you wish to replace it?";
 
-                        Button confirmButton = new Button("Confirm", confirmEvent -> {
+                        Button confirmButton = new Button("Confirm");
+                        Dialog confirmDialog = createDialogConfirmation(message, confirmButton);
+
+                        confirmButton.addClickListener(confirmEvent -> {
                             int replaceRes = FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), true);
                             if (replaceRes == 0) {
                                 Notification.show("Folder Created");
@@ -236,22 +246,17 @@ public class FilesView extends VerticalLayout {
                             else{
                                 Notification.show("Could not create folder");
                             }
-                            dialog.close();
+                            confirmDialog.close();
                         });
-
-                        Dialog confirmDialog = createDialogConfirmation(message, confirmButton);
                         confirmDialog.open();
-
                     }
                     else{
                         Notification.show("Could not create folder");
                     }
                 }
-                dialog.close();
+                nameDialog.close();
             });
-
-            Dialog dialog = createNewDialog(textField,  closeButton);
-            dialog.open();
+            nameDialog.open();
         });
 
         gridContextMenu.addItem("Copy To", event -> {
@@ -362,9 +367,8 @@ public class FilesView extends VerticalLayout {
                 updateMenuBar(grid, this.menuBar);
                 updateGrid(grid);
             } else {
-                String fileParam = Common.getBuilder().toJson(event.getItem()); 
-
-                UI.getCurrent().navigate(FileDisplay.class, fileParam);
+                SessionInfo.setFileToOpen((File) event.getItem());
+                UI.getCurrent().navigate(FileDisplay.class);
             }
         });
         

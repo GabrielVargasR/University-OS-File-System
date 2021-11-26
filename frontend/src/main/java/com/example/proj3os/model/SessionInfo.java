@@ -10,12 +10,20 @@ public class SessionInfo {
     private static String currentDirectory;
     private static String currentModalDirectory = ROOT;
     private static FileSystemElement fileToCopy;
+    private static File fileToOpen;
     private static String fileToDownload;
+
 
     private static ArrayList<Breadcrumb> breadCrumbs = new ArrayList<>();
 
     private SessionInfo() { }
 
+    public static File getFileToOpen() {
+        return fileToOpen;
+    }
+    public static void setFileToOpen(File fileToOpen) {
+        SessionInfo.fileToOpen = fileToOpen;
+    }
     public static SessionInfo getInstance() {
         return singleton;
     }

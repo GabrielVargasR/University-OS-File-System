@@ -35,7 +35,7 @@ public class SignUpView extends VerticalLayout {
         signUp.setI18n(i18n);
         signUp.addLoginListener(event -> {
             UserController controller = new UserController();
-            int status = controller.signup(event.getUsername(), event.getPassword(), maxSize);
+            int status = controller.signup(event.getUsername(), event.getPassword(), getMaxSize());
             if (status == HttpStatus.CREATED.value()) {
                 UI.getCurrent().navigate(LoginView.class);
                 Notification.show("User created successfully! Log in to continue");
@@ -57,7 +57,7 @@ public class SignUpView extends VerticalLayout {
         numberField.setValue(1d);
         numberField.setMin(1);
         numberField.addInputListener(event ->{
-            maxSize = numberField.getValue().intValue();
+            setMaxSize(numberField.getValue().intValue());
         });
         add(logInLink);
         add(numberField);
