@@ -55,8 +55,10 @@ public class JsonFileSystem implements IConstants {
         return jsonManager.writeToFileSystem(fileSystem);
     }
 
-    public boolean createFileSyste(String pUsername, String pPassword) {
-        FileSystem fs = new FileSystem(pUsername, pPassword, new Directory(ROOT_NAME));
+    public boolean createFileSystem(String pUsername, String pPassword, int pMaxSize) {
+        Directory rootDir = new Directory(ROOT_NAME);
+        rootDir.getContents().add(new Directory(SHARED_DIR_NAME));
+        FileSystem fs = new FileSystem(pUsername, pPassword, rootDir, pMaxSize);
         return jsonManager.createFileSystem(fs);
     }
 

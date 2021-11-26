@@ -1,9 +1,25 @@
 {
   "username": "edu",
-  "password": "1234",
+  "password": "123",
   "files": {
-    "name": "root",
-    "type": "directory",
-    "contents": []
-  }
+    "contents": [
+      {
+        "contents": [],
+        "name": "Shared Folder",
+        "type": "directory"
+      },
+      {
+        "extension": "txt",
+        "creation": "25/11/2021 23:41:10",
+        "modified": "25/11/2021 23:41:10",
+        "size": 0,
+        "contents": "",
+        "name": "Un Archivo0",
+        "type": "file"
+      }
+    ],
+    "name": "Root",
+    "type": "directory"
+  },
+  "maxSize": 1
 }

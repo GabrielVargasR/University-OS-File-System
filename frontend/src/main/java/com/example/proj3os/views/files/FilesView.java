@@ -1,15 +1,19 @@
 package com.example.proj3os.views.files;
 
+import com.vaadin.flow.component.UI;
 import com.example.proj3os.controllers.DownloadLink;
 import com.example.proj3os.controllers.FileController;
+import com.example.proj3os.helper.Common;
 import com.example.proj3os.model.Breadcrumb;
 import com.example.proj3os.model.File;
 import com.example.proj3os.model.Directory;
 import com.example.proj3os.model.FileSystemElement;
 import com.example.proj3os.model.SessionInfo;
 import com.example.proj3os.views.MainLayout;
+import com.example.proj3os.views.file.FileDisplay;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.contextmenu.MenuItem;
@@ -18,7 +22,9 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -26,10 +32,13 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.router.RouterLink;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,8 +47,10 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,8 +63,9 @@ public class FilesView extends VerticalLayout {
     private final Grid<FileSystemElement> grid;
     private Grid<FileSystemElement> dialogGrid;
     private final MenuBar menuBar;
-    private final Dialog dialog = new Dialog();
 
+    private final Dialog dialog = new Dialog();
+    private static boolean movingFlag = false;
     MemoryBuffer memoryBuffer = new MemoryBuffer();
     Upload singleFileUpload = new Upload(memoryBuffer);
     DownloadLink downloadLink = new DownloadLink();
@@ -76,10 +88,45 @@ public class FilesView extends VerticalLayout {
         session.getBreadCrumbs().add(new Breadcrumb(ROOT, session.getCurrentDirectory(), session.getBreadCrumbs().size()));
         updateMenuBar(grid, menuBar);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, createDownloadButton(), createDeleteButton());
+        HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, createDownloadButton(), createDeleteButton(), createShareButton());
 
         add(menuBar, grid, horizontalLayout, dialog);
     }
+
+    public static void setMovingFlag(boolean movingFlag) {
+        FilesView.movingFlag = movingFlag;
+    }
+
+    private Button createShareButton(){
+
+        Button shareButton = new Button(new Icon(VaadinIcon.SHARE));
+        shareButton.addClickListener(event ->{
+            Set<FileSystemElement> selected = this.grid.asMultiSelect().getValue();
+            TextField textField = new TextField();
+            textField.setTitle("Username");
+            Dialog dialog = new Dialog();
+            dialog.add(textField);
+            dialog.setCloseOnEsc(false);
+            dialog.setCloseOnOutsideClick(false);
+    
+            Button closeButton = new Button("Accept", buttonEvent -> {
+                for (FileSystemElement fileSystemElement : selected) {
+                    boolean res = FileController.shareElement(fileSystemElement, textField.getValue());
+                    if (res) {
+                        Notification.show("Shared to: " + textField.getValue() );
+                    }
+                    else{
+                        Notification.show("Failed to share");
+                    }
+                }
+                dialog.close();
+            });
+            dialog.add(new Div(closeButton));
+            dialog.open();
+        });
+        return shareButton;
+    }
+
 
     private Button createDownloadButton(){
 
@@ -158,21 +205,89 @@ public class FilesView extends VerticalLayout {
     public void initGridContextMenu(GridContextMenu<FileSystemElement> gridContextMenu, Grid<FileSystemElement> grid){
         SessionInfo session = SessionInfo.getInstance();
         gridContextMenu.addItem("New File", event -> {
-            if(FileController.createFile("New File", session.getUsername(), session.getCurrentDirectory())){
-                Notification.show("File Created");
-                updateGrid(grid);
-            } else {
-                Notification.show("Could not create file");
-            }
+            TextField textField = new TextField("New File Name:");
+
+            Button closeButton = new Button("Accept");
+            Dialog nameDialog = createNewDialog(textField, closeButton);
+
+            closeButton.addClickListener(closeDialogEvent -> {
+                int res = FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), false);
+                if(res == 0){
+                    Notification.show("File Created");
+                    updateGrid(grid);
+                    // ? Ni idea como agarrar el file 
+                    // grid.get
+                    // SessionInfo.setFileToOpen((File) event.getItem());
+                    // UI.getCurrent().navigate(FileDisplay.class);
+                }
+                else {
+                    if(res == 1){
+                        String message = "A File with the same name already exists. Do you wish to replace it?";
+
+                        Button confirmButton = new Button("Confirm");
+                        Dialog confirmDialog = createDialogConfirmation(message, confirmButton);
+
+                        confirmButton.addClickListener(confirmEvent -> {
+                            int replaceRes = FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), true);
+                            if (replaceRes == 0) {
+                                Notification.show("File Created");
+                                updateGrid(grid);
+                            }
+                            else{
+                                Notification.show("Could not create File");
+                            }
+                            confirmDialog.close();
+                        }); 
+                        confirmDialog.open();
+
+                    }
+                    else{
+                        Notification.show("Could not create folder");
+                    }
+                }
+                nameDialog.close();
+            }); 
+            nameDialog.open();
         });
 
         gridContextMenu.addItem("New Folder", event -> {
-            if(FileController.createDirectory("New Folder", session.getUsername(), session.getCurrentDirectory())){
-                Notification.show("Folder Created");
-                updateGrid(grid);
-            } else {
-                Notification.show("Could not create folder");
-            }
+            TextField textField = new TextField("New Folder Name:");
+
+            Button closeButton = new Button("Accept");
+            Dialog nameDialog = createNewDialog(textField,  closeButton);
+            closeButton.addClickListener(closeDialogEvent -> {
+                int res = FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), false);
+                if(res == 0){
+                    Notification.show("Folder Created");
+                    updateGrid(grid);
+                } 
+                else {
+                    if(res == 1){
+                        String message = "A Folder with the same name already exists. Do you wish to replace it?";
+
+                        Button confirmButton = new Button("Confirm");
+                        Dialog confirmDialog = createDialogConfirmation(message, confirmButton);
+
+                        confirmButton.addClickListener(confirmEvent -> {
+                            int replaceRes = FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory(), true);
+                            if (replaceRes == 0) {
+                                Notification.show("Folder Created");
+                                updateGrid(grid);
+                            }
+                            else{
+                                Notification.show("Could not create folder");
+                            }
+                            confirmDialog.close();
+                        });
+                        confirmDialog.open();
+                    }
+                    else{
+                        Notification.show("Could not create folder");
+                    }
+                }
+                nameDialog.close();
+            });
+            nameDialog.open();
         });
 
         gridContextMenu.addItem("Copy To", event -> {
@@ -183,13 +298,34 @@ public class FilesView extends VerticalLayout {
             updateGridDirectoriesOnly(dialogGrid, session.getCurrentModalDirectory());
             dialog.open();
         });
+
+        gridContextMenu.addItem("Move To", event -> {
+            movingFlag = true;
+            FileSystemElement fileSystemElement = event.getItem().orElse(null);
+            assert fileSystemElement!=null;
+            session.setFileToCopy(fileSystemElement);
+            session.setCurrentModalDirectory(ROOT);
+            updateGridDirectoriesOnly(dialogGrid, session.getCurrentModalDirectory());
+            dialog.open();
+        });
+        
     }
 
     public VerticalLayout createDialogueLayout(Dialog dialog){
-        Button cancelButton = new Button("Cancel", e -> dialog.close());
+        Button cancelButton = new Button("Cancel", e -> {
+            dialog.close();
+        });
         Button saveButton = new Button("Save", e -> {
             SessionInfo sessionInfo = SessionInfo.getInstance();
-            FileController.copyFile(sessionInfo.getFileToCopy(),sessionInfo.getCurrentDirectory(), sessionInfo.getCurrentModalDirectory());
+            if (movingFlag) {
+                FileController.moveFile(sessionInfo.getFileToCopy(),sessionInfo.getCurrentDirectory(), sessionInfo.getCurrentModalDirectory());
+                updateGrid(grid);
+            }
+            else{
+                FileController.copyFile(sessionInfo.getFileToCopy(),sessionInfo.getCurrentDirectory(), sessionInfo.getCurrentModalDirectory());
+                updateGrid(grid);
+            }
+
             dialog.close();
         });
         cancelButton.setEnabled(true);
@@ -264,7 +400,8 @@ public class FilesView extends VerticalLayout {
                 updateMenuBar(grid, this.menuBar);
                 updateGrid(grid);
             } else {
-                add(new Paragraph("Aquí (FilesView.java) iría el código para abrir el archivo"));
+                SessionInfo.setFileToOpen((File) event.getItem());
+                UI.getCurrent().navigate(FileDisplay.class);
             }
         });
         
@@ -293,12 +430,42 @@ public class FilesView extends VerticalLayout {
                         formatter.format(date),
                         fileExtension,
                         String.valueOf(contentLength),
-                        text);
+                        text, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             updateGrid(grid);
             // processFile(fileData, fileName, contentLength, mimeType);
         });
+    }
+
+    private Dialog createNewDialog(TextField textField, Button closeButton ) {
+        Dialog dialog = new Dialog();
+
+        dialog.add(textField);
+        dialog.setCloseOnEsc(false);
+        dialog.setCloseOnOutsideClick(false);
+
+        dialog.add(new Div(closeButton));
+
+        return dialog;
+
+    }
+
+    private Dialog createDialogConfirmation(String pText, Button confirmButton) {
+        Dialog dialog = new Dialog();
+        dialog.add(new Text(pText));
+        dialog.setCloseOnEsc(false);
+        dialog.setCloseOnOutsideClick(false);
+        Span message = new Span();
+
+        Button cancelButton = new Button("Cancel", event -> {
+            message.setText("Cancelled...");
+            dialog.close();
+        });
+
+        dialog.add(new Div( confirmButton, cancelButton));
+
+        return dialog;
     }
 }

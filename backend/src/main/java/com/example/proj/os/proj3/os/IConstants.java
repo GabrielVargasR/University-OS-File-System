@@ -11,5 +11,8 @@ public interface IConstants {
     static final String EXTENSION = "txt";
     static final String ROOT = "/";
     static final String ROOT_NAME = "Root";
+    static final String SHARED_DIR_NAME = "Shared Folder";
+
+    static final String EXISTING_ELEMENT_MESSAGE = "ExistingElement";
 
 }

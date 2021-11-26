@@ -4,11 +4,13 @@ public class FileSystem {
     private String username;
     private String password;
     private Directory files;
+    private int maxSize;
 
-    public FileSystem (String username, String password, Directory files) {
+    public FileSystem (String username, String password, Directory files, int maxSize) {
         this.username = username;
         this.password = password;
         this.files = files;
+        this.maxSize = maxSize;
     }
 
     public String getUsername() {
@@ -33,6 +35,13 @@ public class FileSystem {
 
     public void setFiles(Directory files) {
         this.files = files;
+    }
+
+    public int getMaxSize() {
+        return maxSize;
+    }
+    public void setMaxSize(int maxSize) {
+        this.maxSize = maxSize;
     }
 
 }
