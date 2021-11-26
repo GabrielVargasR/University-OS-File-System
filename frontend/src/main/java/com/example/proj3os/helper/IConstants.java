@@ -9,4 +9,6 @@ public interface IConstants {
     String TYPE = "type";
     String EXTENSION = "txt";
     String ROOT = "/";
+
+    static final String SHARED_DIR_NAME = "Shared Folder";
 }

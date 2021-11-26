@@ -1,6 +1,7 @@
 package com.example.proj3os.controllers;
 
 import com.example.proj3os.helper.Common;
+import com.example.proj3os.helper.IConstants;
 import com.example.proj3os.model.Directory;
 import com.example.proj3os.model.File;
 import com.example.proj3os.model.FileSystemElement;
@@ -231,6 +232,56 @@ public class FileController {
         } catch (MalformedURLException e) {
             return false;
         }
+    }
+
+    public static boolean shareElement(FileSystemElement element, String targetUser){
+        String targetDirectory = IConstants.SHARED_DIR_NAME;
+
+        //String newName = newNameWithIndex(element.getName(), targetDirectory);
+
+        if (element.getType().equals(DIRECTORY)) {
+
+            try {
+                String endpoint = "http://localhost:3000/api/createDirectory?dirName="
+                        + URLEncoder.encode(
+                                newName + "&user=" + targetUser + "&path="
+                                        + targetDirectory + "&replaceFlag=" + Boolean.toString(false),
+                                StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+                System.out.println(endpoint);
+                if (Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()) {
+                    Directory directory = (Directory) element;
+                    for (FileSystemElement content : directory.getContents()) {
+                        copyFile(content, SessionInfo.getInstance().getCurrentDirectory(), targetDirectory + "/" + newName);
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (MalformedURLException | UnsupportedEncodingException e) {
+                return false;
+            }
+
+        } else {
+            try {
+                File file = (File) element;
+                String endpoint = "http://localhost:3000/api/createFile?fileName="
+                        + URLEncoder
+                                .encode(newName + "&user=" + targetUser + "&path="
+                                        + targetDirectory + "&created=" + file.getCreation() + "&modified="
+                                        + file.getModified() + "&extension=" + file.getExtension() + "&size="
+                                        + file.getSize() + "&content=" + file.getContents() + "&replaceFlag="
+                                        + Boolean.toString(false), StandardCharsets.UTF_8.toString())
+                                .replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+                System.out.println(endpoint);
+                if (Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()) {
+                    return true;
+                }
+            } catch (MalformedURLException | UnsupportedEncodingException f) {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     public static boolean copyFile(FileSystemElement fileToCopy, String currentDirectory, String targetDirectory) {

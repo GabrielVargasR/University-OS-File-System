@@ -88,7 +88,7 @@ public class FilesView extends VerticalLayout {
         session.getBreadCrumbs().add(new Breadcrumb(ROOT, session.getCurrentDirectory(), session.getBreadCrumbs().size()));
         updateMenuBar(grid, menuBar);
 
-        HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, createDownloadButton(), createDeleteButton());
+        HorizontalLayout horizontalLayout = new HorizontalLayout(singleFileUpload, createDownloadButton(), createDeleteButton(), createShareButton());
 
         add(menuBar, grid, horizontalLayout, dialog);
     }
@@ -96,6 +96,37 @@ public class FilesView extends VerticalLayout {
     public static void setMovingFlag(boolean movingFlag) {
         FilesView.movingFlag = movingFlag;
     }
+
+    private Button createShareButton(){
+
+        Button shareButton = new Button(new Icon(VaadinIcon.SHARE));
+        shareButton.addClickListener(event ->{
+            Set<FileSystemElement> selected = this.grid.asMultiSelect().getValue();
+            TextField textField = new TextField();
+            textField.setTitle("Username");
+            Dialog dialog = new Dialog();
+            dialog.add(textField);
+            dialog.setCloseOnEsc(false);
+            dialog.setCloseOnOutsideClick(false);
+    
+            Button closeButton = new Button("Accept", buttonEvent -> {
+                for (FileSystemElement fileSystemElement : selected) {
+                    boolean res = FileController.shareElement(fileSystemElement, textField.getValue());
+                    if (res) {
+                        Notification.show("Shared to: " + textField.getValue() );
+                    }
+                    else{
+                        Notification.show("Failed to share");
+                    }
+                }
+                dialog.close();
+            });
+            dialog.add(new Div(closeButton));
+            dialog.open();
+        });
+        return shareButton;
+    }
+
 
     private Button createDownloadButton(){
 
