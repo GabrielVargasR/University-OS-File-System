@@ -17,8 +17,11 @@ public class FileManager {
         Directory currentDir = fileSystem.getDirectory(username, path);
 
         if (currentDir != null) {
-            if (replaceFlag || currentDir.findFile(fileName) == null) {
+            File currentFile = currentDir.findFile(fileName);
+            if (replaceFlag || currentFile == null) {
                 File newFile;
+
+                currentDir.getContents().remove(currentFile);
 
                 if (content == null) {
                     Date date = new Date();
@@ -78,7 +81,10 @@ public class FileManager {
         Directory currentDir = fileSystem.getDirectory(username, path);
 
         if (currentDir != null) {
-            if (replaceFlag || currentDir.findDir(folderName) == null) {
+            Directory dirToDelete = currentDir.findDir(folderName);
+            if (replaceFlag || dirToDelete == null) {
+                
+                currentDir.getContents().remove(dirToDelete);
 
                 Directory newDirectory = new Directory(folderName, new ArrayList<>());
                 currentDir.getContents().add(newDirectory);
