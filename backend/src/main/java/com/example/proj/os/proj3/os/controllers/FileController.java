@@ -35,7 +35,7 @@ public class FileController {
     public ResponseEntity<?> createFile(@RequestParam("fileName") String pFileName,
                                         @RequestParam("user") String user,
                                         @RequestParam("path") String path,
-                                        @RequestParam(value = "content") String content,
+                                        @RequestParam(value = "content", required = false) String content,
                                         @RequestParam(value = "created", required = false) String created,
                                         @RequestParam(value = "modified", required = false) String modified,
                                         @RequestParam(value = "extension", required = false) String extension,

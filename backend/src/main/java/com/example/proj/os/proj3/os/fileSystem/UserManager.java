@@ -12,7 +12,10 @@ public class UserManager implements IConstants {
 
     public boolean checkCredentials(String pUsername, String pPassword){
         FileSystem fs = JsonFileSystem.getInstance().getFileSystem(pUsername);
-        return fs.getUsername().equals(pUsername) && fs.getPassword().equals(pPassword);
+        if (fs != null ) {
+            return fs.getUsername().equals(pUsername) && fs.getPassword().equals(pPassword);
+        }
+        return false;
     }
 
     public boolean createUser(String pUsername, String pPassword, int pMaxSize) {

@@ -20,7 +20,7 @@ public class FileManager {
             if (currentDir.findFile(fileName) == null) {
                 File newFile;
 
-                if (content.equals("")) {
+                if (content == null) {
                     Date date = new Date();
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 

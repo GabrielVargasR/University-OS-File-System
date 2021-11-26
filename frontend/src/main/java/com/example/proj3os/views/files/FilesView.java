@@ -175,8 +175,7 @@ public class FilesView extends VerticalLayout {
         SessionInfo session = SessionInfo.getInstance();
         gridContextMenu.addItem("New File", event -> {
             TextField textField = new TextField("New File Name:");
-            Dialog dialog = createNewDialog(textField);
-            dialog.addDialogCloseActionListener(closeDialogEvent -> {
+            Dialog dialog = createNewDialog(textField, closeDialogEvent -> {
                 if(FileController.createFile(textField.getValue(), session.getUsername(), session.getCurrentDirectory())){
                     Notification.show("File Created");
                     updateGrid(grid);
@@ -186,20 +185,23 @@ public class FilesView extends VerticalLayout {
                 } else {
                     Notification.show("Could not create file");
                 }
+                Dialog d = (Dialog) (closeDialogEvent.getSource().getParent().get());
+                d.close();
             });
             dialog.open();
         });
 
         gridContextMenu.addItem("New Folder", event -> {
             TextField textField = new TextField("New Folder Name:");
-            Dialog dialog = createNewDialog(textField);
-            dialog.addDialogCloseActionListener(closeDialogEvent -> {
+            Dialog dialog = createNewDialog(textField, closeDialogEvent -> {
                 if(FileController.createDirectory(textField.getValue(), session.getUsername(), session.getCurrentDirectory())){
                     Notification.show("Folder Created");
                     updateGrid(grid);
                 } else {
                     Notification.show("Could not create folder");
                 }
+                Dialog d = (Dialog) (closeDialogEvent.getSource().getParent().get());
+                d.close();
             });
             dialog.open();
         });
@@ -352,16 +354,14 @@ public class FilesView extends VerticalLayout {
         });
     }
 
-    private Dialog createNewDialog(TextField textField) {
+    private Dialog createNewDialog(TextField textField, ComponentEventListener<ClickEvent<Button>> closingListener ) {
         Dialog dialog = new Dialog();
 
         dialog.add(textField);
         dialog.setCloseOnEsc(false);
         dialog.setCloseOnOutsideClick(false);
 
-        Button closeButton = new Button("Close", event -> {
-            dialog.close();
-        });
+        Button closeButton = new Button("Accept", closingListener);
 
         dialog.add(new Div(closeButton));
 
