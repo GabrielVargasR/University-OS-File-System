@@ -63,9 +63,9 @@ public class FileController {
     }
 
     public static boolean createFile(String fileName, String user, String currentPath){
-        String newName = newNameWithIndex(fileName, currentPath);
+        //String newName = newNameWithIndex(fileName, currentPath);
         try {
-            String endpoint = "http://localhost:3000/api/createFile?fileName=" + URLEncoder.encode(newName+"&user="+user+"&path="+currentPath, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+            String endpoint = "http://localhost:3000/api/createFile?fileName=" + URLEncoder.encode(fileName+"&user="+user+"&path="+currentPath, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
             System.out.println(endpoint);
             if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
                 return true;
@@ -145,9 +145,9 @@ public class FileController {
     }
 
     public static boolean createDirectory(String folderName, String user, String currentPath) {
-        String newName = newNameWithIndex(folderName, currentPath);
+        //String newName = newNameWithIndex(folderName, currentPath);
         try {
-            String endpoint = "http://localhost:3000/api/createDirectory?dirName=" + URLEncoder.encode(newName+"&user="+user+"&path="+currentPath, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
+            String endpoint = "http://localhost:3000/api/createDirectory?dirName=" + URLEncoder.encode(folderName+"&user="+user+"&path="+currentPath, StandardCharsets.UTF_8.toString()).replaceAll("%26", "&").replaceAll("%3D", "=").trim();
             System.out.println(endpoint);
             if(Common.makeApiCall(new URL(endpoint), "GET") == HttpStatus.OK.value()){
                 return true;
